@@ -1219,10 +1219,10 @@
 
             const flexOption = `
                 <div class="option-item">
-                    <input type="radio" name="deliveryTime" id="time-flex" value="גמיש" checked>
+                    <input type="radio" name="deliveryTime" id="time-flex" value="גמיש בין ${start} ל-${end}" checked>
                     <label for="time-flex">
                         <div class="custom-check"></div>
-                        <div class="option-text"><div class="name">גמיש</div></div>
+                        <div class="option-text"><div class="name">גמיש בין השעות ${start} ל-${end}</div></div>
                     </label>
                 </div>`;
             optionsEl.innerHTML = flexOption + slots.map(slot => `
