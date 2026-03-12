@@ -603,6 +603,27 @@
             color: var(--error);
         }
 
+        #validation-toast {
+            position: fixed;
+            top: 1.2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: #c0392b;
+            color: #fff;
+            padding: 0.85rem 1.4rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+            z-index: 9999;
+            transition: transform 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        #validation-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
         .spinner {
             display: inline-block;
             width: 20px;
@@ -732,6 +753,7 @@
     </div>
 
     <div class="form-container">
+        <div id="validation-toast"></div>
         <form id="orderForm">
 
             <!-- Section 1: Menu Info -->
@@ -808,7 +830,7 @@
                     <button type="button" class="btn btn-secondary" onclick="goToSection(1)">
                         → חזרה
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="savePersonalDetails(); goToSection(3)">
+                    <button type="button" class="btn btn-primary" onclick="savePersonalDetails(); validateAndGo(3)">
                         המשך ←
                     </button>
                 </div>
@@ -971,7 +993,7 @@
                     <button type="button" class="btn btn-secondary" onclick="goToSection(2)">
                         → חזרה
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="goToSection(4)">
+                    <button type="button" class="btn btn-primary" onclick="validateAndGo(4)">
                         לסיום ←
                     </button>
                 </div>
@@ -1063,6 +1085,36 @@
             if (name)    document.getElementById('field-name').value    = name;
             if (phone)   document.getElementById('field-phone').value   = phone;
             if (address) document.getElementById('field-address').value = address;
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('validation-toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        function validateAndGo(targetSection) {
+            // Validate the current section before advancing
+            if (currentSection === 2 && !validateSection(2)) {
+                const name  = document.getElementById('field-name').value.trim();
+                const phone = document.getElementById('field-phone').value.trim();
+                if (!name)  { showToast('נא למלא שם פרטי ושם משפחה'); return; }
+                if (!phone) { showToast('נא למלא מספר טלפון'); return; }
+            }
+            if (currentSection === 3 && !validateSection(3)) {
+                const day    = document.querySelector('input[name="day"]:checked');
+                const time   = document.querySelector('input[name="deliveryTime"]:checked');
+                const platter= document.querySelector('input[name="platter"]:checked');
+                const fish   = document.querySelectorAll('input[name="fish"]:checked');
+                if (!day)           { showToast('נא לבחור יום משלוח'); return; }
+                if (!time)          { showToast('נא לבחור שעת משלוח'); return; }
+                if (!platter)       { showToast('נא לבחור גודל מגש'); return; }
+                if (!fish.length)   { showToast('נא לבחור לפחות סוג דג אחד'); return; }
+            }
+            goToSection(targetSection);
         }
 
         function goToSection(n) {
@@ -1278,42 +1330,12 @@
             const notes = document.getElementById('field-notes').value.trim();
 
             // Basic validation
-            if (!name) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא למלא שם פרטי ושם משפחה';
-                goToSection(2);
-                return;
-            }
-            if (!phone) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא למלא מספר טלפון';
-                goToSection(2);
-                return;
-            }
-            if (!day) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא לבחור יום משלוח';
-                goToSection(3);
-                return;
-            }
-            if (!deliveryTime) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא לבחור שעת משלוח';
-                goToSection(3);
-                return;
-            }
-            if (!platter) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא לבחור גודל מגש';
-                goToSection(3);
-                return;
-            }
-            if (fishChecked.length === 0) {
-                status.className = 'submit-status error';
-                status.textContent = 'נא לבחור סוג דג';
-                goToSection(3);
-                return;
-            }
+            if (!name)  { showToast('נא למלא שם פרטי ושם משפחה'); goToSection(2); return; }
+            if (!phone) { showToast('נא למלא מספר טלפון');         goToSection(2); return; }
+            if (!day)          { showToast('נא לבחור יום משלוח');          goToSection(3); return; }
+            if (!deliveryTime) { showToast('נא לבחור שעת משלוח');          goToSection(3); return; }
+            if (!platter)      { showToast('נא לבחור גודל מגש');            goToSection(3); return; }
+            if (!fishChecked.length) { showToast('נא לבחור לפחות סוג דג אחד'); goToSection(3); return; }
 
             // Build payload
             const fishLabels = {
