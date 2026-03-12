@@ -1217,9 +1217,17 @@
             const midH   = Math.round((startH + endH) / 2);
             const slots  = [startH, midH, endH].map(h => String(h).padStart(2, '0') + ':00');
 
-            optionsEl.innerHTML = slots.map(slot => `
+            const flexOption = `
                 <div class="option-item">
-                    <input type="radio" name="deliveryTime" id="time-${slot}" value="${slot}" required>
+                    <input type="radio" name="deliveryTime" id="time-flex" value="גמיש" checked>
+                    <label for="time-flex">
+                        <div class="custom-check"></div>
+                        <div class="option-text"><div class="name">גמיש</div></div>
+                    </label>
+                </div>`;
+            optionsEl.innerHTML = flexOption + slots.map(slot => `
+                <div class="option-item">
+                    <input type="radio" name="deliveryTime" id="time-${slot}" value="${slot}">
                     <label for="time-${slot}">
                         <div class="custom-check"></div>
                         <div class="option-text"><div class="name">${slot}</div></div>
