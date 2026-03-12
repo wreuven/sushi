@@ -808,8 +808,8 @@
                     <button type="button" class="btn btn-secondary" onclick="goToSection(1)">
                         → חזרה
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="goToSection(3)">
-                        להזמנה ←
+                    <button type="button" class="btn btn-primary" onclick="savePersonalDetails(); goToSection(3)">
+                        המשך ←
                     </button>
                 </div>
             </div>
@@ -1050,6 +1050,21 @@
             });
         }
 
+        function savePersonalDetails() {
+            localStorage.setItem('sushi_name',    document.getElementById('field-name').value);
+            localStorage.setItem('sushi_phone',   document.getElementById('field-phone').value);
+            localStorage.setItem('sushi_address', document.getElementById('field-address').value);
+        }
+
+        function loadPersonalDetails() {
+            const name    = localStorage.getItem('sushi_name');
+            const phone   = localStorage.getItem('sushi_phone');
+            const address = localStorage.getItem('sushi_address');
+            if (name)    document.getElementById('field-name').value    = name;
+            if (phone)   document.getElementById('field-phone').value   = phone;
+            if (address) document.getElementById('field-address').value = address;
+        }
+
         function goToSection(n) {
             document.querySelector(`.form-section[data-section="${currentSection}"]`).classList.remove('active');
             document.querySelector(`.form-section[data-section="${n}"]`).classList.add('active');
@@ -1233,6 +1248,7 @@
         }
 
         loadAvailability();
+        loadPersonalDetails();
 
         // Limit fish selection to 2
         document.querySelectorAll('input[name="fish"]').forEach(cb => {
