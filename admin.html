@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סושי הבית - ניהול</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #e4c26e;
+            --gold-dark: #c9a84c;
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0f1a30;
+            --text-light: #f0ece2;
+            --text-muted: #a8a4b8;
+            --error: #ff6b6b;
+            --success: #51cf66;
+            --warning: #ffd43b;
+            --status-new: #74c0fc;
+            --status-confirmed: #51cf66;
+            --status-delivered: #868e96;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Heebo', Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* ---- Login Screen ---- */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 380px;
+            border: 1px solid rgba(228,194,110,0.15);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .login-box h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .login-box p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            background: var(--bg-input);
+            border: 2px solid rgba(228,194,110,0.15);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+
+        .login-box input:focus {
+            border-color: var(--gold);
+        }
+
+        .login-error {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            min-height: 1.2rem;
+        }
+
+        /* ---- Main App ---- */
+        #app { display: none; }
+
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid rgba(228,194,110,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .topbar h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        /* ---- Tabs ---- */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid rgba(228,194,110,0.1);
+            padding: 0 2rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+        .tab-btn:hover {
+            color: var(--text-light);
+        }
+
+        .tab-content { display: none; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        /* ---- Buttons ---- */
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-ghost {
+            background: rgba(228,194,110,0.1);
+            color: var(--gold);
+            border: 1px solid rgba(228,194,110,0.2);
+        }
+
+        .btn-ghost:hover { background: rgba(228,194,110,0.18); }
+
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.8rem; }
+
+        .btn-danger { background: rgba(255,107,107,0.15); color: var(--error); border: 1px solid rgba(255,107,107,0.3); }
+
+        /* ---- Cards ---- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(228,194,110,0.1);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        /* ---- Orders Tab ---- */
+        .orders-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .orders-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(228,194,110,0.2);
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: rgba(228,194,110,0.1);
+            color: var(--gold);
+            border-color: rgba(228,194,110,0.4);
+        }
+
+        .day-group { margin-bottom: 2rem; }
+
+        .day-group-header {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold);
+            padding: 0.5rem 0;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(228,194,110,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-count {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            background: rgba(228,194,110,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        .order-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(228,194,110,0.08);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .order-card.status-confirmed { border-color: rgba(81,207,102,0.25); }
+        .order-card.status-delivered { opacity: 0.5; }
+
+        .order-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+
+        .order-detail {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .order-detail strong { color: var(--text-light); }
+
+        .order-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.חדש        { background: rgba(116,192,252,0.15); color: var(--status-new); }
+        .status-badge.מאושר      { background: rgba(81,207,102,0.15);  color: var(--status-confirmed); }
+        .status-badge.נמסר       { background: rgba(134,142,150,0.15); color: var(--status-delivered); }
+
+        .no-orders {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+            font-size: 0.95rem;
+        }
+
+        /* ---- Availability Tab ---- */
+        .avail-section { margin-bottom: 2rem; }
+
+        .avail-section label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .avail-section input[type="text"] {
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 2px solid rgba(228,194,110,0.15);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+            max-width: 320px;
+            text-align: right;
+        }
+
+        .avail-section input[type="text"]:focus { border-color: var(--gold); }
+
+        .days-editor { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .day-row {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 1.1rem 1.25rem;
+            border: 2px solid rgba(228,194,110,0.08);
+            transition: border-color 0.2s;
+        }
+
+        .day-row.enabled { border-color: rgba(228,194,110,0.25); }
+
+        .day-row-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0;
+        }
+
+        .day-row.enabled .day-row-header { margin-bottom: 1rem; }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            right: 3px;
+            top: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle input:checked + .toggle-slider { background: rgba(228,194,110,0.3); }
+        .toggle input:checked + .toggle-slider::before {
+            background: var(--gold);
+            transform: translateX(-20px);
+        }
+
+        .day-row-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            flex: 1;
+        }
+
+        .day-row-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .field-group input {
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(228,194,110,0.15);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            text-align: right;
+        }
+
+        .field-group input:focus { border-color: var(--gold); }
+
+        .save-bar {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-dark);
+            border-top: 1px solid rgba(228,194,110,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .save-status {
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+        }
+
+        .save-status.success { color: var(--success); }
+        .save-status.error   { color: var(--error); }
+
+        /* ---- Spinner ---- */
+        .spinner {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(26,26,46,0.3);
+            border-top-color: var(--bg-dark);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.4rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            .topbar { padding: 1rem; }
+            .tab-content { padding: 1rem; }
+            .day-row-fields { grid-template-columns: 1fr 1fr; }
+            .order-card { grid-template-columns: 1fr; }
+            .order-actions { flex-direction: row; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+    <div class="login-box">
+        <h1>סושי הבית</h1>
+        <p>כניסה למערכת הניהול</p>
+        <input type="password" id="password-input" placeholder="סיסמה" onkeydown="if(event.key==='Enter') doLogin()">
+        <div class="login-error" id="login-error"></div>
+        <button class="btn btn-primary" style="width:100%;padding:0.9rem;" onclick="doLogin()">כניסה</button>
+    </div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+    <div class="topbar">
+        <h1>🍣 סושי הבית — ניהול</h1>
+        <div class="topbar-actions">
+            <button class="btn btn-ghost btn-sm" onclick="refreshOrders()">רענון הזמנות</button>
+            <button class="btn btn-ghost btn-sm" onclick="logout()">יציאה</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('orders')">📋 הזמנות</button>
+        <button class="tab-btn" onclick="switchTab('availability')">📅 זמינות</button>
+    </div>
+
+    <!-- Orders Tab -->
+    <div class="tab-content active" id="tab-orders">
+        <div class="orders-header">
+            <h2>הזמנות קרובות</h2>
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="setFilter('all', this)">הכל</button>
+                <button class="filter-btn" onclick="setFilter('חדש', this)">חדש</button>
+                <button class="filter-btn" onclick="setFilter('מאושר', this)">מאושר</button>
+                <button class="filter-btn" onclick="setFilter('נמסר', this)">נמסר</button>
+            </div>
+        </div>
+        <div id="orders-container">
+            <div class="loading-state">טוען הזמנות...</div>
+        </div>
+    </div>
+
+    <!-- Availability Tab -->
+    <div class="tab-content" id="tab-availability">
+        <div class="card">
+            <h2>הגדרת ימי הזמנה לשבוע הקרוב</h2>
+
+            <div class="avail-section">
+                <label>תווית השבוע (מה שיוצג ללקוחות)</label>
+                <input type="text" id="week-label" placeholder="למשל: 14.3.26">
+            </div>
+
+            <div class="avail-section">
+                <label>ימים זמינים</label>
+                <div class="days-editor" id="days-editor">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-bar" id="save-bar" style="display:none;">
+        <span class="save-status" id="save-status"></span>
+        <button class="btn btn-primary" onclick="saveAvailability()">שמירה ועדכון הטופס</button>
+    </div>
+</div>
+
+<script>
+    // ---- CONFIG: same URL as order-form.html ----
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyjN9WiwkfBdkprA2xMLDM_Gs4inmZ49psW-O9iPsFbl_uTHNaKcWMH0UzJ3ISMYlVnHQ/exec';
+    // ---------------------------------------------
+
+    const DAY_TEMPLATES = [
+        { day: 'ראשון',  label: 'יום ראשון',  deadline: '13:00', deliveryStart: '16:00', deliveryEnd: '19:00' },
+        { day: 'שני',    label: 'יום שני',    deadline: '13:00', deliveryStart: '16:00', deliveryEnd: '19:00' },
+        { day: 'שלישי',  label: 'יום שלישי',  deadline: '14:00', deliveryStart: '17:00', deliveryEnd: '21:00' },
+        { day: 'רביעי',  label: 'יום רביעי',  deadline: '14:00', deliveryStart: '17:00', deliveryEnd: '21:00' },
+        { day: 'חמישי',  label: 'יום חמישי',  deadline: '14:00', deliveryStart: '17:00', deliveryEnd: '21:00' },
+        { day: 'שישי',   label: 'יום שישי',   deadline: '10:00', deliveryStart: '12:00', deliveryEnd: '15:00' },
+    ];
+
+    let adminPassword = '';
+    let allOrders = [];
+    let currentFilter = 'all';
+
+    // ---- Login ----
+    function doLogin() {
+        const pw = document.getElementById('password-input').value;
+        if (!pw) return;
+
+        // Test the password by making an API call
+        api({ action: 'getOrders', password: pw }).then(res => {
+            if (res.status === 'error' && res.message === 'unauthorized') {
+                document.getElementById('login-error').textContent = 'סיסמה שגויה';
+                return;
+            }
+            adminPassword = pw;
+            sessionStorage.setItem('sushi_admin_pw', pw);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            allOrders = res.orders || [];
+            renderOrders();
+            loadAvailability();
+        }).catch(() => {
+            document.getElementById('login-error').textContent = 'שגיאת חיבור — בדקו את כתובת ה-API';
+        });
+    }
+
+    function logout() {
+        sessionStorage.removeItem('sushi_admin_pw');
+        location.reload();
+    }
+
+    // Auto-login if password in session
+    window.addEventListener('load', () => {
+        const saved = sessionStorage.getItem('sushi_admin_pw');
+        if (saved) {
+            document.getElementById('password-input').value = saved;
+            doLogin();
+        }
+    });
+
+    // ---- Tabs ----
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+        document.getElementById('save-bar').style.display = name === 'availability' ? 'flex' : 'none';
+    }
+
+    // ---- Orders ----
+    function setFilter(f, btn) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderOrders();
+    }
+
+    async function refreshOrders() {
+        document.getElementById('orders-container').innerHTML = '<div class="loading-state">טוען...</div>';
+        const res = await api({ action: 'getOrders', password: adminPassword });
+        if (res.status === 'ok') {
+            allOrders = res.orders || [];
+            renderOrders();
+        }
+    }
+
+    function renderOrders() {
+        const container = document.getElementById('orders-container');
+        let orders = allOrders;
+
+        if (currentFilter !== 'all') {
+            orders = orders.filter(o => o.status === currentFilter);
+        }
+
+        if (orders.length === 0) {
+            container.innerHTML = '<div class="no-orders">אין הזמנות להצגה</div>';
+            return;
+        }
+
+        // Group by day
+        const groups = {};
+        orders.forEach(o => {
+            const key = o.day || 'לא צוין';
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(o);
+        });
+
+        const dayOrder = ['יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','יום ראשון','לא צוין'];
+        const sortedKeys = Object.keys(groups).sort((a, b) => {
+            const ai = dayOrder.indexOf(a), bi = dayOrder.indexOf(b);
+            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+        });
+
+        container.innerHTML = sortedKeys.map(day => `
+            <div class="day-group">
+                <div class="day-group-header">
+                    <span>${day}</span>
+                    <span class="day-count">${groups[day].length} הזמנות</span>
+                </div>
+                ${groups[day].map(o => renderOrderCard(o)).join('')}
+            </div>
+        `).join('');
+    }
+
+    function renderOrderCard(o) {
+        const statusClass = o.status || 'חדש';
+        return `
+            <div class="order-card status-${statusClass}" id="order-${o.row}">
+                <div>
+                    <div class="order-name">${o.name}</div>
+                    <div class="order-detail">
+                        📞 <strong>${o.phone || '-'}</strong>
+                        ${o.address ? ` &nbsp;📍 <strong>${o.address}</strong>` : ''}
+                        <br>
+                        🍱 <strong>${o.platter} יחידות</strong>
+                        &nbsp;🐟 <strong>${o.fish}</strong>
+                        ${o.remove ? `<br>ללא: ${o.remove}` : ''}
+                        ${o.notes ? `<br>💬 ${o.notes}` : ''}
+                        <br><span style="font-size:0.75rem;color:var(--text-muted)">${o.timestamp}</span>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <span class="status-badge ${statusClass}">${statusClass}</span>
+                    ${o.status !== 'מאושר'  ? `<button class="btn btn-ghost btn-sm"   onclick="setStatus(${o.row},'מאושר')">אשר</button>` : ''}
+                    ${o.status !== 'נמסר'   ? `<button class="btn btn-primary btn-sm" onclick="setStatus(${o.row},'נמסר')">נמסר</button>` : ''}
+                    ${o.status !== 'חדש'    ? `<button class="btn btn-danger btn-sm"  onclick="setStatus(${o.row},'חדש')">אפס</button>` : ''}
+                </div>
+            </div>`;
+    }
+
+    async function setStatus(row, status) {
+        const res = await api({ action: 'updateOrderStatus', password: adminPassword, row, status });
+        if (res.status === 'ok') {
+            const order = allOrders.find(o => o.row === row);
+            if (order) { order.status = status; renderOrders(); }
+        }
+    }
+
+    // ---- Availability ----
+    async function loadAvailability() {
+        const res = await api({ action: 'getAvailability' });
+        document.getElementById('save-bar').style.display = 'none';
+
+        if (res.status === 'ok') {
+            document.getElementById('week-label').value = res.weekLabel || '';
+            renderDaysEditor(res.days);
+        } else {
+            renderDaysEditor([]);
+        }
+
+        // Show save bar when on availability tab
+        document.getElementById('save-bar').style.display =
+            document.getElementById('tab-availability').classList.contains('active') ? 'flex' : 'none';
+    }
+
+    function renderDaysEditor(savedDays) {
+        const editor = document.getElementById('days-editor');
+
+        editor.innerHTML = DAY_TEMPLATES.map(template => {
+            const saved = savedDays.find(d => d.day === template.day) || {};
+            const active = saved.active || false;
+            const deadline      = saved.deadline      || template.deadline;
+            const deliveryStart = saved.deliveryStart || template.deliveryStart;
+            const deliveryEnd   = saved.deliveryEnd   || template.deliveryEnd;
+
+            return `
+                <div class="day-row ${active ? 'enabled' : ''}" id="row-${template.day}">
+                    <div class="day-row-header">
+                        <label class="toggle">
+                            <input type="checkbox" ${active ? 'checked' : ''} onchange="toggleDay('${template.day}', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="day-row-label">${template.label}</span>
+                    </div>
+                    <div class="day-row-fields" style="display:${active ? 'grid' : 'none'}" id="fields-${template.day}">
+                        <div class="field-group">
+                            <label>הזמנה עד</label>
+                            <input type="text" id="deadline-${template.day}" value="${deadline}" placeholder="13:00">
+                        </div>
+                        <div class="field-group">
+                            <label>משלוח מ</label>
+                            <input type="text" id="deliveryStart-${template.day}" value="${deliveryStart}" placeholder="16:00">
+                        </div>
+                        <div class="field-group">
+                            <label>משלוח עד</label>
+                            <input type="text" id="deliveryEnd-${template.day}" value="${deliveryEnd}" placeholder="19:00">
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function toggleDay(day, enabled) {
+        const row    = document.getElementById('row-' + day);
+        const fields = document.getElementById('fields-' + day);
+        row.classList.toggle('enabled', enabled);
+        fields.style.display = enabled ? 'grid' : 'none';
+    }
+
+    async function saveAvailability() {
+        const weekLabel = document.getElementById('week-label').value.trim();
+        const btn = document.querySelector('.save-bar .btn-primary');
+        const statusEl = document.getElementById('save-status');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>שומר...';
+        statusEl.textContent = '';
+        statusEl.className = 'save-status';
+
+        const availability = DAY_TEMPLATES.map(t => ({
+            day:           t.day,
+            label:         t.label,
+            active:        document.querySelector(`#row-${t.day} input[type="checkbox"]`).checked,
+            deadline:      document.getElementById('deadline-'      + t.day)?.value || t.deadline,
+            deliveryStart: document.getElementById('deliveryStart-' + t.day)?.value || t.deliveryStart,
+            deliveryEnd:   document.getElementById('deliveryEnd-'   + t.day)?.value || t.deliveryEnd,
+        }));
+
+        const res = await api({ action: 'setAvailability', password: adminPassword, weekLabel, availability });
+
+        btn.disabled = false;
+        btn.textContent = 'שמירה ועדכון הטופס';
+
+        if (res.status === 'ok') {
+            statusEl.textContent = '✓ נשמר בהצלחה — הטופס יתעדכן אוטומטית';
+            statusEl.className = 'save-status success';
+        } else {
+            statusEl.textContent = 'שגיאה: ' + (res.message || 'נסה שנית');
+            statusEl.className = 'save-status error';
+        }
+    }
+
+    // ---- API helper ----
+    async function api(payload) {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain' }
+        });
+        return res.json();
+    }
+</script>
+</body>
+</html>

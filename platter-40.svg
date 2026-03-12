@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <radialGradient id="board40" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c4956a"/>
+      <stop offset="100%" stop-color="#8b6240"/>
+    </radialGradient>
+    <radialGradient id="rice" cx="40%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#f0e6d3"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Wooden board -->
+  <circle cx="150" cy="150" r="140" fill="url(#board40)" stroke="#6b4226" stroke-width="4"/>
+  <circle cx="150" cy="150" r="130" fill="none" stroke="#a07050" stroke-width="1" opacity="0.4"/>
+
+  <!-- Maki rolls row 1 (top) -->
+  <g transform="translate(70,55)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+  </g>
+  <g transform="translate(105,48)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+  </g>
+  <g transform="translate(140,45)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+  </g>
+  <g transform="translate(175,48)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+  </g>
+  <g transform="translate(210,55)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+
+  <!-- Inside-out rolls row (upper middle) -->
+  <g transform="translate(60,92)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+    <circle cx="-5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+    <circle cx="5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+  </g>
+  <g transform="translate(95,85)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+    <circle cx="-5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+    <circle cx="5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+  </g>
+  <g transform="translate(130,80)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+    <circle cx="-5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+  </g>
+  <g transform="translate(165,80)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+    <circle cx="5" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+  </g>
+  <g transform="translate(200,85)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+    <circle cx="0" cy="-12" r="2.5" fill="#ff6b35" opacity="0.8"/>
+  </g>
+  <g transform="translate(235,92)">
+    <circle cx="0" cy="0" r="15" fill="url(#rice)" stroke="#e0d5c0" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+  </g>
+
+  <!-- Nigiri row (center) -->
+  <g transform="translate(75,130)">
+    <ellipse cx="0" cy="0" rx="18" ry="10" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-3" rx="16" ry="7" fill="#e85d3a" opacity="0.9"/>
+  </g>
+  <g transform="translate(118,125)">
+    <ellipse cx="0" cy="0" rx="18" ry="10" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-3" rx="16" ry="7" fill="#e85d3a" opacity="0.9"/>
+  </g>
+  <g transform="translate(161,123)">
+    <ellipse cx="0" cy="0" rx="18" ry="10" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-3" rx="16" ry="7" fill="#ffcc02"/>
+  </g>
+  <g transform="translate(204,125)">
+    <ellipse cx="0" cy="0" rx="18" ry="10" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-3" rx="16" ry="7" fill="#ffcc02"/>
+  </g>
+
+  <!-- Tempura rolls (lower middle) -->
+  <g transform="translate(55,168)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+    <path d="M-8,-14 Q-12,-22 -6,-20 Q0,-18 -2,-14" fill="#f5c96b" stroke="#d4a84a" stroke-width="1"/>
+  </g>
+  <g transform="translate(90,162)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+    <path d="M-8,-14 Q-12,-22 -6,-20 Q0,-18 -2,-14" fill="#f5c96b" stroke="#d4a84a" stroke-width="1"/>
+  </g>
+  <g transform="translate(125,158)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+    <path d="M8,-14 Q12,-22 6,-20 Q0,-18 2,-14" fill="#f5c96b" stroke="#d4a84a" stroke-width="1"/>
+  </g>
+  <g transform="translate(160,158)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+    <path d="M8,-14 Q12,-22 6,-20 Q0,-18 2,-14" fill="#f5c96b" stroke="#d4a84a" stroke-width="1"/>
+  </g>
+  <g transform="translate(195,162)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+  <g transform="translate(230,168)">
+    <circle cx="0" cy="0" r="15" fill="#f5c96b" stroke="#d4a84a" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="#1a472a"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+  </g>
+
+  <!-- Maki row bottom -->
+  <g transform="translate(65,208)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+  <g transform="translate(100,202)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+  <g transform="translate(135,198)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+  </g>
+  <g transform="translate(170,198)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+  </g>
+  <g transform="translate(205,202)">
+    <circle cx="0" cy="0" r="14" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#e85d3a"/>
+  </g>
+
+  <!-- Bottom scattered pieces -->
+  <g transform="translate(80,243)">
+    <circle cx="0" cy="0" r="13" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+  <g transform="translate(115,238)">
+    <ellipse cx="0" cy="0" rx="16" ry="9" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-2" rx="14" ry="6" fill="#e85d3a" opacity="0.9"/>
+  </g>
+  <g transform="translate(150,236)">
+    <circle cx="0" cy="0" r="13" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#ff8c42"/>
+  </g>
+  <g transform="translate(185,238)">
+    <ellipse cx="0" cy="0" rx="16" ry="9" fill="url(#rice)" stroke="#e0d5c0" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-2" rx="14" ry="6" fill="#e85d3a" opacity="0.9"/>
+  </g>
+  <g transform="translate(220,243)">
+    <circle cx="0" cy="0" r="13" fill="#1a472a" stroke="#0d2818" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="url(#rice)"/>
+    <circle cx="0" cy="0" r="5" fill="#6db56d"/>
+  </g>
+
+  <!-- Decorative wasabi and ginger -->
+  <ellipse cx="150" cy="155" rx="8" ry="6" fill="#7cb342" opacity="0.7"/>
+  <g transform="translate(140,270)">
+    <ellipse cx="0" cy="0" rx="12" ry="4" fill="#ffb6c1" opacity="0.6"/>
+    <ellipse cx="5" cy="-2" rx="10" ry="3" fill="#ffb6c1" opacity="0.4"/>
+  </g>
+</svg>

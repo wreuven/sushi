@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סושי הבית - דף הזמנות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #e4c26e;
+            --gold-light: #f0d68a;
+            --gold-dark: #c9a84c;
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0f1a30;
+            --text-light: #f0ece2;
+            --text-muted: #a8a4b8;
+            --accent: #e4c26e;
+            --error: #ff6b6b;
+            --success: #51cf66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', Arial, sans-serif, 'Noto Color Emoji';
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(26,26,46,0.85) 0%, rgba(22,33,62,0.7) 50%, rgba(26,26,46,0.85) 100%),
+                url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1600&q=80') center/cover no-repeat;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 2px 20px rgba(228, 194, 110, 0.3);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            max-width: 700px;
+            margin: -30px auto 0;
+            position: relative;
+            z-index: 2;
+            padding: 0 1.5rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(228, 194, 110, 0.15);
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border: 2px solid rgba(228, 194, 110, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-number {
+            background: var(--gold);
+            color: var(--bg-dark);
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(228, 194, 110, 0.4);
+        }
+
+        .progress-step.completed .step-number {
+            background: var(--gold-dark);
+            color: var(--bg-dark);
+            border-color: var(--gold-dark);
+        }
+
+        .progress-step .step-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-label {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .progress-step.has-error .step-number {
+            background: var(--error);
+            color: #fff;
+            border-color: var(--error);
+            box-shadow: 0 0 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .progress-step.has-error .step-label {
+            color: var(--error);
+        }
+
+        .progress-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(228, 194, 110, 0.15);
+            margin: 0 0.5rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .progress-line .fill {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            background: var(--gold-dark);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        /* Section (each "page") */
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(228, 194, 110, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(228, 194, 110, 0.25);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p.subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Menu Info Card */
+        .menu-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(228, 194, 110, 0.05) 100%);
+        }
+
+        .menu-list {
+            list-style: none;
+            margin-top: 1rem;
+            padding: 0;
+            columns: 2;
+            column-gap: 2rem;
+        }
+
+        .menu-list li {
+            position: relative;
+            padding: 0.5rem 1.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .menu-list li::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0.85rem;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--gold);
+        }
+
+        /* Schedule Card */
+        .schedule-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(228, 194, 110, 0.08) 100%);
+            border-color: rgba(228, 194, 110, 0.25);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .schedule-day {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(228, 194, 110, 0.1);
+        }
+
+        .schedule-day .day-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-day .day-detail {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .schedule-day .day-delivery {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label.field-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 0.6rem;
+        }
+
+        label.field-label .required {
+            color: var(--error);
+            margin-right: 0.25rem;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            direction: rtl;
+            text-align: right;
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            background: var(--bg-input);
+            border: 2px solid rgba(228, 194, 110, 0.15);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(228, 194, 110, 0.1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="tel"]::placeholder,
+        textarea::placeholder {
+            color: rgba(168, 164, 184, 0.5);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Radio & Checkbox Options */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-group.grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            position: relative;
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .option-item label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: var(--bg-input);
+            border: 2px solid rgba(228, 194, 110, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .option-item label:hover {
+            border-color: rgba(228, 194, 110, 0.3);
+            background: rgba(228, 194, 110, 0.05);
+        }
+
+        .option-item input:checked + label {
+            border-color: var(--gold);
+            background: rgba(228, 194, 110, 0.08);
+            box-shadow: 0 0 15px rgba(228, 194, 110, 0.1);
+        }
+
+        .option-item .option-icon {
+            font-size: 1.6rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .option-item .option-text {
+            flex: 1;
+        }
+
+        .option-item .option-text .name {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .option-item .option-text .desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .custom-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(228, 194, 110, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        input[type="checkbox"] + label .custom-check {
+            border-radius: 6px;
+        }
+
+        input:checked + label .custom-check {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        input:checked + label .custom-check::after {
+            content: '✓';
+            color: var(--bg-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Platter Visual Cards */
+        .platter-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .platter-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platter-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .platter-card label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: var(--bg-input);
+            border: 2px solid rgba(228, 194, 110, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .platter-card label:hover {
+            border-color: rgba(228, 194, 110, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .platter-card input:checked + label {
+            border-color: var(--gold);
+            background: rgba(228, 194, 110, 0.08);
+            box-shadow: 0 4px 20px rgba(228, 194, 110, 0.15);
+        }
+
+        .platter-card .platter-emoji {
+            margin-bottom: 0.75rem;
+        }
+
+        .platter-card .platter-emoji img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .platter-card .platter-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .platter-card .platter-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .platter-card .platter-badge {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(228, 194, 110, 0.15);
+            color: var(--gold);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.9rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Heebo', Arial, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 15px rgba(228, 194, 110, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(228, 194, 110, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(228, 194, 110, 0.1);
+            color: var(--gold);
+            border: 1px solid rgba(228, 194, 110, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(228, 194, 110, 0.15);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--bg-dark);
+            width: 100%;
+            padding: 1.1rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(228, 194, 110, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(228, 194, 110, 0.45);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-status {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            min-height: 1.5rem;
+        }
+
+        .submit-status.success {
+            color: var(--success);
+        }
+
+        .submit-status.error {
+            color: var(--error);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(26,26,46,0.3);
+            border-top-color: var(--bg-dark);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: rgba(228, 194, 110, 0.08);
+            border: 1px solid rgba(228, 194, 110, 0.15);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .info-banner .info-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .info-banner .info-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .info-banner .info-text strong {
+            color: var(--gold-light);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero {
+                height: 220px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .progress-bar {
+                padding: 0.75rem 1rem;
+            }
+
+            .progress-step .step-label {
+                font-size: 0.65rem;
+            }
+
+            .platter-options,
+            .option-group.grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-list {
+                columns: 1;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>סושי הבית</h1>
+            <p>דף הזמנות - סושי טרי עד הבית באלעזר</p>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">תפריט</div>
+            </div>
+            <div class="progress-line"><div class="fill"></div></div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">פרטים</div>
+            </div>
+            <div class="progress-line"><div class="fill"></div></div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">הזמנה</div>
+            </div>
+            <div class="progress-line"><div class="fill"></div></div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-label">סיום</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <form id="orderForm">
+
+            <!-- Section 1: Menu Info -->
+            <div class="form-section active" data-section="1">
+                <div class="card menu-card">
+                    <h2>מה בתוך המגש?</h2>
+                    <p class="subtitle">מגש של 40 יחידות מכיל:</p>
+
+                    <ul class="menu-list">
+                        <li>2 רול פוטומאקי - אבוקדו, בטטה, גזר, מלפפון וסוג דג לבחירה</li>
+                        <li>רול אינסייד-אאוט - אבוקדו, בטטה, גזר, מלפפון וסוג דג לבחירה</li>
+                        <li>רול טמפורה - אבוקדו, בטטה, בצל ירוק וסוג דג לבחירה</li>
+                        <li>4 יחידות מאקי סלמון ובטטה (צמחוני - בטטה וגזר)</li>
+                        <li>4 יחידות מאקי אבוקדו ומלפפון</li>
+                    </ul>
+
+                    <p class="subtitle" style="margin-top: 1rem; margin-bottom: 0;">מגש של 80 יחידות הוא כפול 2</p>
+                </div>
+
+                <div class="card schedule-card">
+                    <h2>ימי הזמנה השבוע</h2>
+                    <div id="schedule-content">
+                        <p class="subtitle">טוען...</p>
+                    </div>
+                </div>
+
+                <div class="info-banner">
+                    <div class="info-icon">📋</div>
+                    <div class="info-text">
+                        <strong>הזמנה לאירועים:</strong> יש אפשרות ליצור קשר בכל ימי השבוע (לפחות 3 מגשים).<br>
+                        לקבלת עדכונים שבועיים הצטרפו לקבוצת הוואטסאפ של סושי הבית.<br>
+                        <strong>טלפון לבירורים:</strong> הלל - 0555573725
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn btn-primary" onclick="goToSection(2)">
+                        בואו נתחיל ←
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 2: Personal Info -->
+            <div class="form-section" data-section="2">
+                <div class="card">
+                    <h2>פרטים אישיים</h2>
+                    <p class="subtitle">כדי שנוכל לתאם את המשלוח</p>
+
+                    <div class="form-group">
+                        <label class="field-label">
+                            <span class="required">*</span>
+                            שם פרטי ושם משפחה
+                        </label>
+                        <input type="text" id="field-name" placeholder="הכניסו את שמכם המלא" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label">
+                            <span class="required">*</span>
+                            מספר טלפון
+                        </label>
+                        <input type="tel" id="field-phone" placeholder="מספר טלפון" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label">
+                            כתובת למשלוח (רק באלעזר)
+                        </label>
+                        <input type="text" id="field-address" placeholder="רחוב ומספר בית">
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="goToSection(1)">
+                        → חזרה
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="goToSection(3)">
+                        להזמנה ←
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 3: Order Details -->
+            <div class="form-section" data-section="3">
+
+                <!-- Delivery Day -->
+                <div class="card">
+                    <h2>יום משלוח</h2>
+                    <p class="subtitle">באיזה יום תרצו לקבל את ההזמנה? <span class="required">*</span></p>
+
+                    <div class="option-group day-options" id="day-options-container">
+                        <p class="subtitle" style="padding: 1rem; color: var(--text-muted);">טוען ימי משלוח זמינים...</p>
+                    </div>
+                </div>
+
+                <!-- Platter Size -->
+                <div class="card">
+                    <h2>אני רוצה להזמין:</h2>
+                    <p class="subtitle">בחרו את הגודל המתאים לכם <span class="required">*</span></p>
+
+                    <div class="platter-options">
+                        <div class="platter-card">
+                            <input type="radio" name="platter" id="platter40" value="40" required checked>
+                            <label for="platter40">
+                                <div class="platter-emoji"><img src="platter-40.svg" alt="מגש 40"></div>
+                                <div class="platter-name">מגש של 40 חתיכות סושי</div>
+                                <div class="platter-desc">מושלם ליחיד או לזוג</div>
+                                <div class="platter-badge">40 חתיכות</div>
+                            </label>
+                        </div>
+                        <div class="platter-card">
+                            <input type="radio" name="platter" id="platter80" value="80">
+                            <label for="platter80">
+                                <div class="platter-emoji"><img src="platter-80.svg" alt="מגש 80"></div>
+                                <div class="platter-name">מגש של 80 חתיכות סושי</div>
+                                <div class="platter-desc">מושלם למשפחה או אירוע</div>
+                                <div class="platter-badge">80 חתיכות - כפול!</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fish Type -->
+                <div class="card">
+                    <h2>סוג דג</h2>
+                    <p class="subtitle">ניתן לבחור עד 2 אפשרויות <span class="required">*</span></p>
+
+                    <div class="option-group">
+                        <div class="option-item">
+                            <input type="checkbox" name="fish" id="fish-veg" value="vegetarian">
+                            <label for="fish-veg">
+                                <div class="custom-check"></div>
+                                <div class="option-icon">🌱</div>
+                                <div class="option-text">
+                                    <div class="name">צמחוני</div>
+                                    <div class="desc">ללא דג</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="fish" id="fish-salmon-raw" value="salmon-raw">
+                            <label for="fish-salmon-raw">
+                                <div class="custom-check"></div>
+                                <div class="option-icon">🐟</div>
+                                <div class="option-text">
+                                    <div class="name">סלמון טרי</div>
+                                    <div class="desc">נא, טרי ואיכותי</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="fish" id="fish-salmon-cooked" value="salmon-cooked">
+                            <label for="fish-salmon-cooked">
+                                <div class="custom-check"></div>
+                                <div class="option-icon">🍳</div>
+                                <div class="option-text">
+                                    <div class="name">סלמון אפוי</div>
+                                    <div class="desc">אפוי היטב</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="fish" id="fish-tuna-raw" value="tuna-raw">
+                            <label for="fish-tuna-raw">
+                                <div class="custom-check"></div>
+                                <div class="option-icon">🐠</div>
+                                <div class="option-text">
+                                    <div class="name">טונה טרי</div>
+                                    <div class="desc">נא, טרי ואיכותי</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="fish" id="fish-tuna-cooked" value="tuna-cooked">
+                            <label for="fish-tuna-cooked">
+                                <div class="custom-check"></div>
+                                <div class="option-icon">🔥</div>
+                                <div class="option-text">
+                                    <div class="name">טונה אפוי</div>
+                                    <div class="desc">אפוי היטב</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customization -->
+                <div class="card">
+                    <h2>התאמה אישית</h2>
+                    <p class="subtitle">הורדת פריטים שלא יהיו ברולים (לא חובה)</p>
+
+                    <div class="option-group grid-2">
+                        <div class="option-item">
+                            <input type="checkbox" name="remove" id="rem-avocado" value="avocado">
+                            <label for="rem-avocado">
+                                <div class="custom-check"></div>
+                                <span>🥑 ללא אבוקדו</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="remove" id="rem-sweet-potato" value="sweet-potato">
+                            <label for="rem-sweet-potato">
+                                <div class="custom-check"></div>
+                                <span>🍠 ללא בטטה</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="remove" id="rem-carrot" value="carrot">
+                            <label for="rem-carrot">
+                                <div class="custom-check"></div>
+                                <span>🥕 ללא גזר</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="remove" id="rem-cucumber" value="cucumber">
+                            <label for="rem-cucumber">
+                                <div class="custom-check"></div>
+                                <span>🥒 ללא מלפפון</span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" name="remove" id="rem-egg" value="egg">
+                            <label for="rem-egg">
+                                <div class="custom-check"></div>
+                                <span>🥚 ללא חביתה</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="goToSection(2)">
+                        → חזרה
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="goToSection(4)">
+                        לסיום ←
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section 4: Review & Submit -->
+            <div class="form-section" data-section="4">
+                <div class="card">
+                    <h2>בקשות מיוחדות</h2>
+                    <p class="subtitle">יש משהו נוסף שנרצה לדעת?</p>
+
+                    <div class="form-group">
+                        <textarea id="field-notes" placeholder="בקשות, שאלות, הערות..."></textarea>
+                    </div>
+                </div>
+
+                <div class="card" style="text-align: center;">
+                    <h2>הכל מוכן!</h2>
+                    <p class="subtitle" style="margin-bottom: 1.5rem;">
+                        לחצו על הכפתור לשליחת ההזמנה.<br>
+                        נחזור אליכם בהקדם לאישור.
+                    </p>
+                    <button type="submit" class="btn btn-submit" id="submitBtn">
+                        שליחת ההזמנה 🍣
+                    </button>
+                    <div class="submit-status" id="submitStatus"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="goToSection(3)">
+                        → חזרה לעריכה
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="footer">
+        סושי הבית - אלעזר &bull; הלל - <a href="tel:0555573725">055-557-3725</a>
+    </div>
+
+    <script>
+        // ---- CONFIG: paste your deployed Apps Script URL here ----
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjN9WiwkfBdkprA2xMLDM_Gs4inmZ49psW-O9iPsFbl_uTHNaKcWMH0UzJ3ISMYlVnHQ/exec';
+        // ----------------------------------------------------------
+
+        let currentSection = 1;
+        const totalSections = 4;
+
+        // Validation per section — returns true if valid
+        function validateSection(n) {
+            if (n === 2) {
+                const name = document.getElementById('field-name').value.trim();
+                const phone = document.getElementById('field-phone').value.trim();
+                return name !== '' && phone !== '';
+            }
+            if (n === 3) {
+                const day = document.querySelector('input[name="day"]:checked');
+                const platter = document.querySelector('input[name="platter"]:checked');
+                const fish = document.querySelectorAll('input[name="fish"]:checked');
+                return day !== null && platter !== null && fish.length > 0;
+            }
+            return true; // sections 1 and 4 have no required fields
+        }
+
+        function updateProgressErrors() {
+            document.querySelectorAll('.progress-step').forEach((step, i) => {
+                const stepNum = i + 1;
+                step.classList.remove('has-error');
+                // Only show error on completed (past) sections that are invalid
+                if (stepNum < currentSection && !validateSection(stepNum)) {
+                    step.classList.add('has-error');
+                }
+            });
+        }
+
+        function goToSection(n) {
+            document.querySelector(`.form-section[data-section="${currentSection}"]`).classList.remove('active');
+            document.querySelector(`.form-section[data-section="${n}"]`).classList.add('active');
+
+            document.querySelectorAll('.progress-step').forEach((step, i) => {
+                const stepNum = i + 1;
+                step.classList.remove('active', 'completed');
+                if (stepNum === n) step.classList.add('active');
+                else if (stepNum < n) step.classList.add('completed');
+            });
+
+            document.querySelectorAll('.progress-line .fill').forEach((fill, i) => {
+                fill.style.width = (i < n - 1) ? '100%' : '0%';
+            });
+
+            currentSection = n;
+            updateProgressErrors();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Click on progress step indicators to jump to that section
+        document.querySelectorAll('.progress-step').forEach((step, i) => {
+            step.addEventListener('click', () => {
+                goToSection(i + 1);
+            });
+        });
+
+        // Update error indicators when required fields change
+        ['field-name', 'field-phone'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateProgressErrors);
+        });
+        // input[name="day"] listeners are attached dynamically after availability loads
+        document.querySelectorAll('input[name="platter"], input[name="fish"]').forEach(el => {
+            el.addEventListener('change', updateProgressErrors);
+        });
+
+        // ---- Availability loading ----------------------------------------
+
+        async function loadAvailability() {
+            if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                renderFallbackDays();
+                return;
+            }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getAvailability' }),
+                    headers: { 'Content-Type': 'text/plain' }
+                });
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    renderScheduleCard(data.weekLabel, data.days);
+                    renderDayOptions(data.days);
+                } else {
+                    renderFallbackDays();
+                }
+            } catch (err) {
+                renderFallbackDays();
+                console.warn('Could not load availability:', err);
+            }
+        }
+
+        function renderScheduleCard(weekLabel, days) {
+            const activeDays = days.filter(d => d.active);
+            const content = document.getElementById('schedule-content');
+            if (activeDays.length === 0) {
+                content.innerHTML = '<p class="subtitle">אין ימי משלוח פעילים השבוע. לבירורים: הלל - 0555573725</p>';
+                return;
+            }
+            const subtitle = weekLabel
+                ? `<p class="subtitle">השבוע, ${weekLabel} ניתן להזמין:</p>`
+                : '<p class="subtitle">ניתן להזמין:</p>';
+            const grid = activeDays.map(d => `
+                <div class="schedule-day">
+                    <div class="day-name">${d.label || d.day}</div>
+                    ${d.deadline ? `<div class="day-detail">הזמנה עד <strong>${d.deadline}</strong></div>` : ''}
+                    ${(d.deliveryStart && d.deliveryEnd) ? `<div class="day-delivery">משלוח ${d.deliveryStart} - ${d.deliveryEnd}</div>` : ''}
+                </div>`).join('');
+            content.innerHTML = subtitle + `<div class="schedule-grid">${grid}</div>`;
+        }
+
+        function attachDayListeners(container) {
+            container.querySelectorAll('input[name="day"]').forEach(el => {
+                el.addEventListener('change', updateProgressErrors);
+            });
+        }
+
+        function renderDayOptions(days) {
+            const activeDays = days.filter(d => d.active);
+            const container = document.getElementById('day-options-container');
+            if (activeDays.length === 0) {
+                container.innerHTML = '<p style="padding: 1rem; color: var(--text-muted);">אין ימי משלוח זמינים השבוע.</p>';
+                return;
+            }
+            container.innerHTML = activeDays.map(d => {
+                const id = 'day-' + d.day.replace(/\s/g, '-');
+                const desc = [
+                    d.deadline ? `הזמנה עד ${d.deadline}` : '',
+                    (d.deliveryStart && d.deliveryEnd) ? `משלוח ${d.deliveryStart}-${d.deliveryEnd}` : ''
+                ].filter(Boolean).join(' · ');
+                return `
+                <div class="option-item">
+                    <input type="radio" name="day" id="${id}" value="${d.label || d.day}" required>
+                    <label for="${id}">
+                        <div class="custom-check"></div>
+                        <div class="option-text">
+                            <div class="name">${d.label || d.day}</div>
+                            ${desc ? `<div class="desc">${desc}</div>` : ''}
+                        </div>
+                    </label>
+                </div>`;
+            }).join('');
+            attachDayListeners(container);
+        }
+
+        function renderFallbackDays() {
+            const content = document.getElementById('schedule-content');
+            content.innerHTML = '<p class="subtitle">לבדיקת ימי משלוח זמינים, צרו קשר: הלל - 0555573725</p>';
+            const container = document.getElementById('day-options-container');
+            container.innerHTML = `
+                <div class="option-item">
+                    <input type="radio" name="day" id="day-monday" value="יום שני" required>
+                    <label for="day-monday">
+                        <div class="custom-check"></div>
+                        <div class="option-text">
+                            <div class="name">יום שני</div>
+                            <div class="desc">הזמנה עד 13:00 · משלוח 16:00-19:00</div>
+                        </div>
+                    </label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="day" id="day-wednesday" value="יום רביעי">
+                    <label for="day-wednesday">
+                        <div class="custom-check"></div>
+                        <div class="option-text">
+                            <div class="name">יום רביעי</div>
+                            <div class="desc">הזמנה עד 14:00 · משלוח 17:00-21:00</div>
+                        </div>
+                    </label>
+                </div>
+                <div class="option-item">
+                    <input type="radio" name="day" id="day-thursday" value="יום חמישי">
+                    <label for="day-thursday">
+                        <div class="custom-check"></div>
+                        <div class="option-text">
+                            <div class="name">יום חמישי</div>
+                            <div class="desc">הזמנה עד 14:00 · משלוח 17:00-21:00</div>
+                        </div>
+                    </label>
+                </div>`;
+            attachDayListeners(container);
+        }
+
+        loadAvailability();
+
+        // Limit fish selection to 2
+        document.querySelectorAll('input[name="fish"]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (document.querySelectorAll('input[name="fish"]:checked').length > 2) {
+                    cb.checked = false;
+                }
+            });
+        });
+
+        // Collect form data and submit to Google Sheets
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('submitStatus');
+
+            // Gather values
+            const name = document.getElementById('field-name').value.trim();
+            const phone = document.getElementById('field-phone').value.trim();
+            const address = document.getElementById('field-address').value.trim();
+            const day = document.querySelector('input[name="day"]:checked');
+            const platter = document.querySelector('input[name="platter"]:checked');
+            const fishChecked = document.querySelectorAll('input[name="fish"]:checked');
+            const removeChecked = document.querySelectorAll('input[name="remove"]:checked');
+            const notes = document.getElementById('field-notes').value.trim();
+
+            // Basic validation
+            if (!name) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא למלא שם פרטי ושם משפחה';
+                goToSection(2);
+                return;
+            }
+            if (!phone) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא למלא מספר טלפון';
+                goToSection(2);
+                return;
+            }
+            if (!day) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא לבחור יום משלוח';
+                goToSection(3);
+                return;
+            }
+            if (!platter) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא לבחור גודל מגש';
+                goToSection(3);
+                return;
+            }
+            if (fishChecked.length === 0) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא לבחור סוג דג';
+                goToSection(3);
+                return;
+            }
+
+            // Build payload
+            const fishLabels = {
+                'vegetarian': 'צמחוני',
+                'salmon-raw': 'סלמון טרי',
+                'salmon-cooked': 'סלמון אפוי',
+                'tuna-raw': 'טונה טרי',
+                'tuna-cooked': 'טונה אפוי'
+            };
+            const removeLabels = {
+                'avocado': 'אבוקדו',
+                'sweet-potato': 'בטטה',
+                'carrot': 'גזר',
+                'cucumber': 'מלפפון',
+                'egg': 'חביתה'
+            };
+
+            const payload = {
+                name: name,
+                phone: phone,
+                address: address,
+                day: 'יום ' + day.value,
+                platter: platter.value,
+                fish: Array.from(fishChecked).map(c => fishLabels[c.value] || c.value).join(', '),
+                remove: Array.from(removeChecked).map(c => removeLabels[c.value] || c.value).join(', '),
+                notes: notes
+            };
+
+            // Submit
+            btn.disabled = true;
+            btn.innerHTML = 'שולח... <span class="spinner"></span>';
+            status.className = 'submit-status';
+            status.textContent = '';
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain' }
+                });
+
+                const result = await res.json();
+
+                if (result.status === 'ok') {
+                    status.className = 'submit-status success';
+                    status.textContent = 'ההזמנה נשלחה בהצלחה! נחזור אליכם בהקדם.';
+                    btn.innerHTML = 'נשלח בהצלחה ✓';
+                } else {
+                    throw new Error(result.message || 'Unknown error');
+                }
+            } catch (err) {
+                status.className = 'submit-status error';
+                status.textContent = 'שגיאה בשליחה. נסו שנית או צרו קשר בוואטסאפ.';
+                btn.disabled = false;
+                btn.innerHTML = 'שליחת ההזמנה 🍣';
+                console.error('Submit error:', err);
+            }
+        });
+    </script>
+</body>
+</html>
