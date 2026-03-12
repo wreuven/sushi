@@ -741,15 +741,15 @@
                     <div class="day-row-fields" style="display:${active ? 'grid' : 'none'}" id="fields-${template.day}">
                         <div class="field-group">
                             <label>הזמנה עד</label>
-                            <input type="text" id="deadline-${template.day}" value="${deadline}" placeholder="13:00">
+                            <input type="time" id="deadline-${template.day}" value="${deadline}">
                         </div>
                         <div class="field-group">
                             <label>משלוח מ</label>
-                            <input type="text" id="deliveryStart-${template.day}" value="${deliveryStart}" placeholder="16:00">
+                            <input type="time" id="deliveryStart-${template.day}" value="${deliveryStart}">
                         </div>
                         <div class="field-group">
                             <label>משלוח עד</label>
-                            <input type="text" id="deliveryEnd-${template.day}" value="${deliveryEnd}" placeholder="19:00">
+                            <input type="time" id="deliveryEnd-${template.day}" value="${deliveryEnd}">
                         </div>
                     </div>
                 </div>`;

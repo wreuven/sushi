@@ -825,6 +825,11 @@
                     <div class="option-group day-options" id="day-options-container">
                         <p class="subtitle" style="padding: 1rem; color: var(--text-muted);">טוען ימי משלוח זמינים...</p>
                     </div>
+
+                    <div id="delivery-time-container" style="display:none; margin-top: 1rem;">
+                        <p class="subtitle">בחרו שעת משלוח <span class="required">*</span></p>
+                        <div class="option-group" id="delivery-time-options"></div>
+                    </div>
                 </div>
 
                 <!-- Platter Size -->
@@ -1026,9 +1031,10 @@
             }
             if (n === 3) {
                 const day = document.querySelector('input[name="day"]:checked');
+                const time = document.querySelector('input[name="deliveryTime"]:checked');
                 const platter = document.querySelector('input[name="platter"]:checked');
                 const fish = document.querySelectorAll('input[name="fish"]:checked');
-                return day !== null && platter !== null && fish.length > 0;
+                return day !== null && time !== null && platter !== null && fish.length > 0;
             }
             return true; // sections 1 and 4 have no required fields
         }
@@ -1127,8 +1133,36 @@
 
         function attachDayListeners(container) {
             container.querySelectorAll('input[name="day"]').forEach(el => {
+                el.addEventListener('change', () => {
+                    updateProgressErrors();
+                    renderDeliveryTimeSlots(el.dataset.start, el.dataset.end);
+                });
+            });
+        }
+
+        function renderDeliveryTimeSlots(start, end) {
+            const wrapper = document.getElementById('delivery-time-container');
+            const optionsEl = document.getElementById('delivery-time-options');
+            if (!start || !end) { wrapper.style.display = 'none'; return; }
+
+            const startH = parseInt(start.split(':')[0]);
+            const endH   = parseInt(end.split(':')[0]);
+            const slots  = [];
+            for (let h = startH; h <= endH; h++) slots.push(String(h).padStart(2, '0') + ':00');
+
+            optionsEl.innerHTML = slots.map(slot => `
+                <div class="option-item">
+                    <input type="radio" name="deliveryTime" id="time-${slot}" value="${slot}" required>
+                    <label for="time-${slot}">
+                        <div class="custom-check"></div>
+                        <div class="option-text"><div class="name">${slot}</div></div>
+                    </label>
+                </div>`).join('');
+
+            optionsEl.querySelectorAll('input[name="deliveryTime"]').forEach(el => {
                 el.addEventListener('change', updateProgressErrors);
             });
+            wrapper.style.display = 'block';
         }
 
         function renderDayOptions(days) {
@@ -1146,7 +1180,8 @@
                 ].filter(Boolean).join(' · ');
                 return `
                 <div class="option-item">
-                    <input type="radio" name="day" id="${id}" value="${d.label || d.day}" required>
+                    <input type="radio" name="day" id="${id}" value="${d.label || d.day}"
+                        data-start="${d.deliveryStart || ''}" data-end="${d.deliveryEnd || ''}" required>
                     <label for="${id}">
                         <div class="custom-check"></div>
                         <div class="option-text">
@@ -1165,7 +1200,7 @@
             const container = document.getElementById('day-options-container');
             container.innerHTML = `
                 <div class="option-item">
-                    <input type="radio" name="day" id="day-monday" value="יום שני" required>
+                    <input type="radio" name="day" id="day-monday" value="יום שני" data-start="16:00" data-end="19:00" required>
                     <label for="day-monday">
                         <div class="custom-check"></div>
                         <div class="option-text">
@@ -1175,7 +1210,7 @@
                     </label>
                 </div>
                 <div class="option-item">
-                    <input type="radio" name="day" id="day-wednesday" value="יום רביעי">
+                    <input type="radio" name="day" id="day-wednesday" value="יום רביעי" data-start="17:00" data-end="21:00">
                     <label for="day-wednesday">
                         <div class="custom-check"></div>
                         <div class="option-text">
@@ -1185,7 +1220,7 @@
                     </label>
                 </div>
                 <div class="option-item">
-                    <input type="radio" name="day" id="day-thursday" value="יום חמישי">
+                    <input type="radio" name="day" id="day-thursday" value="יום חמישי" data-start="17:00" data-end="21:00">
                     <label for="day-thursday">
                         <div class="custom-check"></div>
                         <div class="option-text">
@@ -1220,6 +1255,7 @@
             const phone = document.getElementById('field-phone').value.trim();
             const address = document.getElementById('field-address').value.trim();
             const day = document.querySelector('input[name="day"]:checked');
+            const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked');
             const platter = document.querySelector('input[name="platter"]:checked');
             const fishChecked = document.querySelectorAll('input[name="fish"]:checked');
             const removeChecked = document.querySelectorAll('input[name="remove"]:checked');
@@ -1241,6 +1277,12 @@
             if (!day) {
                 status.className = 'submit-status error';
                 status.textContent = 'נא לבחור יום משלוח';
+                goToSection(3);
+                return;
+            }
+            if (!deliveryTime) {
+                status.className = 'submit-status error';
+                status.textContent = 'נא לבחור שעת משלוח';
                 goToSection(3);
                 return;
             }
@@ -1277,7 +1319,7 @@
                 name: name,
                 phone: phone,
                 address: address,
-                day: 'יום ' + day.value,
+                day: day.value + ' בשעה ' + deliveryTime.value,
                 platter: platter.value,
                 fish: Array.from(fishChecked).map(c => fishLabels[c.value] || c.value).join(', '),
                 remove: Array.from(removeChecked).map(c => removeLabels[c.value] || c.value).join(', '),
