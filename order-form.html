@@ -20,6 +20,85 @@
             --success: #51cf66;
         }
 
+        /* ---- Themes ---- */
+        [data-theme="ocean"] {
+            --gold: #48cae4;
+            --gold-light: #90e0ef;
+            --gold-dark: #0096c7;
+            --bg-dark: #03045e;
+            --bg-card: #023e8a;
+            --bg-input: #012a6a;
+            --text-light: #caf0f8;
+            --text-muted: #90cad8;
+            --accent: #48cae4;
+        }
+        [data-theme="forest"] {
+            --gold: #95d5b2;
+            --gold-light: #b7e4c7;
+            --gold-dark: #52b788;
+            --bg-dark: #1b2d1b;
+            --bg-card: #1f3b23;
+            --bg-input: #162818;
+            --text-light: #d8f3dc;
+            --text-muted: #8db994;
+            --accent: #95d5b2;
+        }
+        [data-theme="sakura"] {
+            --gold: #e8a0bf;
+            --gold-light: #f5c2d8;
+            --gold-dark: #c9748f;
+            --bg-dark: #2d1b2d;
+            --bg-card: #3d2040;
+            --bg-input: #251525;
+            --text-light: #fce4ec;
+            --text-muted: #c9a0b4;
+            --accent: #e8a0bf;
+        }
+        [data-theme="light"] {
+            --gold: #c9a84c;
+            --gold-light: #e4c26e;
+            --gold-dark: #a07c2a;
+            --bg-dark: #f5f0e8;
+            --bg-card: #ffffff;
+            --bg-input: #eee8dc;
+            --text-light: #2a2010;
+            --text-muted: #7a6a50;
+            --accent: #c9a84c;
+        }
+
+        /* ---- Theme picker ---- */
+        .theme-picker {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .theme-picker label {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.7);
+            white-space: nowrap;
+        }
+        .theme-picker select {
+            background: rgba(0,0,0,0.45);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.82rem;
+            font-family: 'Heebo', Arial, sans-serif;
+            cursor: pointer;
+            outline: none;
+        }
+        [data-theme="light"] .theme-picker label { color: rgba(0,0,0,0.6); }
+        [data-theme="light"] .theme-picker select {
+            background: rgba(255,255,255,0.7);
+            color: #2a2010;
+            border-color: rgba(0,0,0,0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -723,6 +802,16 @@
 
     <!-- Hero Section -->
     <div class="hero">
+        <div class="theme-picker">
+            <label for="theme-select">🎨</label>
+            <select id="theme-select">
+                <option value="dark">כהה (ברירת מחדל)</option>
+                <option value="ocean">אוקיינוס</option>
+                <option value="forest">יער</option>
+                <option value="sakura">סקורה</option>
+                <option value="light">בהיר</option>
+            </select>
+        </div>
         <div class="hero-content">
             <h1>סושי הבית</h1>
             <p>דף הזמנות - סושי טרי עד הבית באלעזר</p>
@@ -1311,6 +1400,17 @@
 
         loadAvailability();
         loadPersonalDetails();
+
+        // ---- Theme picker ----------------------------------------
+        const themeSelect = document.getElementById('theme-select');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme === 'dark' ? '' : theme);
+            themeSelect.value = theme;
+            localStorage.setItem('sushi_theme', theme);
+        }
+        const savedTheme = localStorage.getItem('sushi_theme') || 'dark';
+        applyTheme(savedTheme);
+        themeSelect.addEventListener('change', () => applyTheme(themeSelect.value));
 
         // Limit fish selection to 2
         document.querySelectorAll('input[name="fish"]').forEach(cb => {
