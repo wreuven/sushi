@@ -1072,6 +1072,43 @@
                     </div>
                 </div>
 
+                <div class="card">
+                    <h2>אמצעי תשלום</h2>
+                    <p class="subtitle">איך תרצו לשלם?</p>
+                    <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="option-item">
+                            <input type="radio" name="payment" id="pay-bit" value="Bit">
+                            <label for="pay-bit">
+                                <div class="custom-check"></div>
+                                <div class="option-text">
+                                    <div class="name" style="font-size:1.1rem;">💜 Bit</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="payment" id="pay-paybox" value="Paybox">
+                            <label for="pay-paybox">
+                                <div class="custom-check"></div>
+                                <div class="option-text">
+                                    <div class="name" style="font-size:1.1rem;">🔵 Paybox</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="payment" id="pay-cash" value="מזומן">
+                            <label for="pay-cash">
+                                <div class="custom-check"></div>
+                                <div class="option-text">
+                                    <div class="name" style="font-size:1.1rem;">💵 מזומן</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="payment-note" style="display:none; margin-top:1rem; text-align:center; color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
+                        לתשלום שלחו ל: <strong style="color:var(--gold);">054-566-4183</strong>
+                    </div>
+                </div>
+
                 <div class="card" style="text-align: center;">
                     <h2>הכל מוכן!</h2>
                     <p class="subtitle" style="margin-bottom: 1.5rem;">
@@ -1372,6 +1409,14 @@
         loadAvailability();
         loadPersonalDetails();
 
+        // Show phone number hint when Bit or Paybox selected
+        document.querySelectorAll('input[name="payment"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const note = document.getElementById('payment-note');
+                note.style.display = (radio.value === 'Bit' || radio.value === 'Paybox') ? 'block' : 'none';
+            });
+        });
+
         // ---- Live price calculator ----------------------------------------
         const PRICES = { '40': { veg: 130, fish: 145 }, '80': { veg: 230, fish: 245 } };
         function updatePrice() {
@@ -1416,6 +1461,7 @@
             const fishChecked = document.querySelectorAll('input[name="fish"]:checked');
             const removeChecked = document.querySelectorAll('input[name="remove"]:checked');
             const notes = document.getElementById('field-notes').value.trim();
+            const paymentChecked = document.querySelector('input[name="payment"]:checked');
 
             // Basic validation
             if (!name)  { showToast('נא למלא שם פרטי ושם משפחה'); goToSection(2); return; }
@@ -1424,6 +1470,7 @@
             if (!deliveryTime) { showToast('נא לבחור שעת משלוח');          goToSection(3); return; }
             if (!platter)      { showToast('נא לבחור גודל מגש');            goToSection(3); return; }
             if (!fishChecked.length) { showToast('נא לבחור לפחות סוג דג אחד'); goToSection(3); return; }
+            if (!paymentChecked) { showToast('נא לבחור אמצעי תשלום'); return; }
 
             // Build payload
             const fishLabels = {
@@ -1449,7 +1496,8 @@
                 platter: platter.value,
                 fish: Array.from(fishChecked).map(c => fishLabels[c.value] || c.value).join(', '),
                 remove: Array.from(removeChecked).map(c => removeLabels[c.value] || c.value).join(', '),
-                notes: notes
+                notes: notes,
+                payment: paymentChecked ? paymentChecked.value : ''
             };
 
             // Submit

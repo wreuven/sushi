@@ -48,7 +48,7 @@ function authWrap(data, fn) {
 function saveOrder(data) {
   var sheet = getOrCreateSheet(SHEET_ORDERS, [
     'תאריך', 'שם', 'טלפון', 'כתובת', 'יום משלוח',
-    'גודל מגש', 'סוג דג', 'הורדת פריטים', 'בקשות', 'סטטוס'
+    'גודל מגש', 'סוג דג', 'הורדת פריטים', 'בקשות', 'תשלום', 'סטטוס'
   ]);
 
   var timestamp = new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
@@ -63,6 +63,7 @@ function saveOrder(data) {
     data.fish     || '',
     data.remove   || '',
     data.notes    || '',
+    data.payment  || '',
     'חדש'
   ]);
 
@@ -77,7 +78,8 @@ function saveOrder(data) {
     'גודל מגש: '    + (data.platter  || '-') + ' יחידות\n' +
     'סוג דג: '      + (data.fish     || '-') + '\n' +
     'הורדת פריטים: '+ (data.remove   || 'ללא') + '\n' +
-    'בקשות: '       + (data.notes    || 'ללא') + '\n\n' +
+    'בקשות: '       + (data.notes    || 'ללא') + '\n' +
+    'תשלום: '       + (data.payment  || '-')   + '\n\n' +
     'תאריך: ' + timestamp + '\n\n' +
     '🔗 ניהול הזמנות: https://wreuven.github.io/sushi/admin.html';
 
@@ -90,7 +92,7 @@ function getOrders() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_ORDERS);
   if (!sheet || sheet.getLastRow() < 2) return { status: 'ok', orders: [] };
 
-  var rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 10).getValues();
+  var rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 11).getValues();
   var orders = rows.map(function(r, i) {
     return {
       row:        i + 2,
@@ -103,7 +105,8 @@ function getOrders() {
       fish:       r[6],
       remove:     r[7],
       notes:      r[8],
-      status:     r[9]
+      payment:    r[9],
+      status:     r[10]
     };
   });
 
@@ -113,7 +116,7 @@ function getOrders() {
 function updateOrderStatus(row, status) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_ORDERS);
   if (!sheet) return { status: 'error', message: 'Orders sheet not found' };
-  sheet.getRange(row, 10).setValue(status);
+  sheet.getRange(row, 11).setValue(status);
   return { status: 'ok' };
 }
 
