@@ -1069,6 +1069,23 @@
                         לחצו על הכפתור לשליחת ההזמנה.<br>
                         נחזור אליכם בהקדם לאישור.
                     </p>
+                    <div style="
+                        margin-bottom: 1.2rem;
+                        padding: 0.9rem 1.2rem;
+                        background: rgba(255,255,255,0.05);
+                        border: 1px solid rgba(255,255,255,0.15);
+                        border-radius: 12px;
+                        font-size: 0.88rem;
+                        color: var(--text-muted);
+                        line-height: 1.6;
+                    ">
+                        סושי הבית מוכן במטבח פרטי וללא כשרות.
+                        <br>
+                        <label style="display:inline-flex; align-items:center; gap:0.5rem; margin-top:0.6rem; cursor:pointer; color:var(--text-light);">
+                            <input type="checkbox" id="kosher-confirm" style="width:16px;height:16px;cursor:pointer;" required>
+                            מאשר/ת והבנתי
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-submit" id="submitBtn">
                         <span style="font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;">🍣</span> שליחת ההזמנה
                     </button>
@@ -1415,6 +1432,7 @@
             if (!deliveryTime) { showToast('נא לבחור שעת משלוח');          goToSection(3); return; }
             if (!platter)      { showToast('נא לבחור גודל מגש');            goToSection(3); return; }
             if (!fishChecked.length) { showToast('נא לבחור לפחות סוג דג אחד'); goToSection(3); return; }
+            if (!document.getElementById('kosher-confirm').checked) { showToast('נא לאשר את הצהרת הכשרות להמשך'); return; }
 
             // Build payload
             const fishLabels = {
