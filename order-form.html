@@ -1104,9 +1104,7 @@
                             </label>
                         </div>
                     </div>
-                    <div id="payment-note" style="display:none; margin-top:1rem; text-align:center; color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
-                        לתשלום שלחו ל: <strong style="color:var(--gold);">054-566-4183</strong>
-                    </div>
+                    <div id="payment-note" style="display:none; margin-top:1.2rem;"></div>
                 </div>
 
                 <div class="card" style="text-align: center;">
@@ -1409,11 +1407,85 @@
         loadAvailability();
         loadPersonalDetails();
 
-        // Show phone number hint when Bit or Paybox selected
+        // Show payment deep-link button when Bit or Paybox selected
+        const PAYMENT_PHONE = '0545664183';
+        const PAYMENT_PHONE_DISPLAY = '054-566-4183';
+
+        function getPrice() {
+            const el = document.getElementById('price-display');
+            if (!el) return null;
+            const txt = el.textContent.replace('₪', '').trim();
+            return parseInt(txt) || null;
+        }
+
+        function renderPaymentNote(method) {
+            const note = document.getElementById('payment-note');
+            if (method === 'מזומן') {
+                note.style.display = 'none';
+                note.innerHTML = '';
+                return;
+            }
+            const price = getPrice();
+            const priceLabel = price ? ' — ₪' + price : '';
+
+            let href, bgColor, logo;
+            if (method === 'Bit') {
+                // Bit app deeplink (Israeli banking app)
+                href = `bit://pay?phone=${PAYMENT_PHONE}${price ? '&amount=' + price : ''}`;
+                bgColor = '#7B2FBE';
+                logo = '💜';
+            } else {
+                // Paybox deeplink
+                href = `paybox://pay?to=${PAYMENT_PHONE}${price ? '&sum=' + price : ''}`;
+                bgColor = '#1565C0';
+                logo = '🔵';
+            }
+
+            note.style.display = 'block';
+            note.innerHTML = `
+                <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                    לתשלום שלחו ל: <strong style="color:var(--gold);">${PAYMENT_PHONE_DISPLAY}</strong>${priceLabel}
+                </div>
+                <a href="${href}"
+                   onclick="handlePaymentLink(event, '${href}', '${PAYMENT_PHONE}')"
+                   style="
+                       display:inline-flex; align-items:center; gap:0.5rem;
+                       background:${bgColor}; color:#fff;
+                       padding:0.65rem 1.4rem; border-radius:50px;
+                       text-decoration:none; font-size:1rem; font-weight:600;
+                       box-shadow:0 4px 15px rgba(0,0,0,0.3);
+                   ">
+                    ${logo} פתח ${method} לתשלום
+                </a>
+                <div id="pay-fallback" style="display:none; margin-top:0.75rem; font-size:0.85rem; color:var(--text-muted);">
+                    האפליקציה לא נמצאה — העתיקו את המספר:
+                    <strong style="color:var(--gold);">${PAYMENT_PHONE_DISPLAY}</strong>
+                </div>
+            `;
+        }
+
+        function handlePaymentLink(e, href, phone) {
+            // On desktop or if app not installed, show fallback after a moment
+            const fallback = document.getElementById('pay-fallback');
+            if (fallback) {
+                setTimeout(() => {
+                    // If page is still visible (app didn't open / take focus), show fallback
+                    if (!document.hidden) fallback.style.display = 'block';
+                }, 1500);
+            }
+        }
+
         document.querySelectorAll('input[name="payment"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                const note = document.getElementById('payment-note');
-                note.style.display = (radio.value === 'Bit' || radio.value === 'Paybox') ? 'block' : 'none';
+            radio.addEventListener('change', () => renderPaymentNote(radio.value));
+        });
+
+        // Re-render note when price changes (in case user changes platter selection)
+        document.querySelectorAll('input[name="platter"], input[name="fish"]').forEach(el => {
+            el.addEventListener('change', () => {
+                const selected = document.querySelector('input[name="payment"]:checked');
+                if (selected && (selected.value === 'Bit' || selected.value === 'Paybox')) {
+                    renderPaymentNote(selected.value);
+                }
             });
         });
 
