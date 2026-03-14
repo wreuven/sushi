@@ -618,6 +618,35 @@
             font-weight: 500;
         }
 
+        .platter-card .platter-price {
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .platter-card .platter-price span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .price-summary {
+            margin-top: 1.2rem;
+            padding: 0.85rem 1.2rem;
+            background: rgba(228, 194, 110, 0.08);
+            border: 1px solid rgba(228, 194, 110, 0.2);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+        .price-summary .price-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-right: 0.3rem;
+        }
+
         /* Navigation Buttons */
         .nav-buttons {
             display: flex;
@@ -974,6 +1003,7 @@
                                 <div class="platter-name">מגש של 40 חתיכות סושי</div>
                                 <div class="platter-desc">מושלם ליחיד או לזוג</div>
                                 <div class="platter-badge">40 חתיכות</div>
+                                <div class="platter-price">צמחוני <span>₪130</span> &nbsp;|&nbsp; עם דג <span>₪145</span></div>
                             </label>
                         </div>
                         <div class="platter-card">
@@ -983,8 +1013,12 @@
                                 <div class="platter-name">מגש של 80 חתיכות סושי</div>
                                 <div class="platter-desc">מושלם למשפחה או אירוע</div>
                                 <div class="platter-badge">80 חתיכות - כפול!</div>
+                                <div class="platter-price">צמחוני <span>₪230</span> &nbsp;|&nbsp; עם דג <span>₪245</span></div>
                             </label>
                         </div>
+                    </div>
+                    <div class="price-summary" id="price-summary">
+                        מחיר: <span class="price-amount" id="price-display">₪130</span>
                     </div>
                 </div>
 
@@ -1427,6 +1461,24 @@
         const savedTheme = localStorage.getItem('sushi_theme') || 'dark';
         applyTheme(savedTheme);
         themeSelect.addEventListener('change', () => applyTheme(themeSelect.value));
+
+        // ---- Live price calculator ----------------------------------------
+        const PRICES = { '40': { veg: 130, fish: 145 }, '80': { veg: 230, fish: 245 } };
+        function updatePrice() {
+            const platter = document.querySelector('input[name="platter"]:checked');
+            const fishChecks = document.querySelectorAll('input[name="fish"]:checked');
+            if (!platter) return;
+            const p = PRICES[platter.value];
+            const isVegOnly = fishChecks.length === 1 &&
+                              fishChecks[0].value === 'vegetarian';
+            const price = (fishChecks.length === 0 || isVegOnly) ? p.veg : p.fish;
+            document.getElementById('price-display').textContent = '₪' + price;
+        }
+        document.querySelectorAll('input[name="platter"]').forEach(el =>
+            el.addEventListener('change', updatePrice));
+        document.querySelectorAll('input[name="fish"]').forEach(el =>
+            el.addEventListener('change', updatePrice));
+        updatePrice();
 
         // Limit fish selection to 2
         document.querySelectorAll('input[name="fish"]').forEach(cb => {
