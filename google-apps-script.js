@@ -78,7 +78,8 @@ function saveOrder(data) {
     'סוג דג: '      + (data.fish     || '-') + '\n' +
     'הורדת פריטים: '+ (data.remove   || 'ללא') + '\n' +
     'בקשות: '       + (data.notes    || 'ללא') + '\n\n' +
-    'תאריך: ' + timestamp;
+    'תאריך: ' + timestamp + '\n\n' +
+    '🔗 ניהול הזמנות: https://wreuven.github.io/sushi/admin.html';
 
   MailApp.sendEmail(EMAIL_TO, subject, body);
 
