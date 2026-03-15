@@ -812,7 +812,7 @@
                         flex-shrink: 0;
                     ">
                     <p style="font-size:1rem; line-height:1.7; color:var(--text-light); text-align:right;">
-                        היי! אני הלל. בת 17 עם אהבה אמיתית להכנת סושי, ואשמח להכין את המגש הבא שלכם. הסושי מוכן במטבח הבית שלי עם המון אהבה.
+                        היי! אני הלל. בת 17 עם אהבה אמיתית להכנת סושי, ואשמח להכין את המגש הבא שלכם. הסושי מוכן במטבח הבית שלי.
                     </p>
                 </div>
                 <div class="card menu-card">
@@ -831,7 +831,7 @@
                 </div>
 
                 <div class="card schedule-card">
-                    <h2>ימי הזמנה השבוע</h2>
+                    <h2>ימות הזמנה השבוע</h2>
                     <div id="schedule-content">
                         <p class="subtitle">טוען...</p>
                     </div>
@@ -902,7 +902,7 @@
                     <p class="subtitle">באיזה יום תרצו לקבל את ההזמנה? <span class="required">*</span></p>
 
                     <div class="option-group day-options" id="day-options-container">
-                        <p class="subtitle" style="padding: 1rem; color: var(--text-muted);">טוען ימי משלוח זמינים...</p>
+                        <p class="subtitle" style="padding: 1rem; color: var(--text-muted);">טוען ימות משלוח זמינים...</p>
                     </div>
 
                     <div id="delivery-time-container" style="display:none; margin-top: 1rem;">
@@ -924,7 +924,6 @@
                                 <div class="platter-name">מגש של 40 חתיכות סושי</div>
                                 <div class="platter-desc">מושלם ליחיד או לזוג</div>
                                 <div class="platter-badge">40 חתיכות</div>
-                                <div class="platter-price">צמחוני <span>₪130</span> &nbsp;|&nbsp; עם דג <span>₪145</span></div>
                             </label>
                         </div>
                         <div class="platter-card">
@@ -934,12 +933,8 @@
                                 <div class="platter-name">מגש של 80 חתיכות סושי</div>
                                 <div class="platter-desc">מושלם למשפחה או אירוע</div>
                                 <div class="platter-badge">80 חתיכות - כפול!</div>
-                                <div class="platter-price">צמחוני <span>₪230</span> &nbsp;|&nbsp; עם דג <span>₪245</span></div>
                             </label>
                         </div>
-                    </div>
-                    <div class="price-summary" id="price-summary">
-                        מחיר: <span class="price-amount" id="price-display">₪130</span>
                     </div>
                 </div>
 
@@ -1072,6 +1067,13 @@
                     </div>
                 </div>
 
+                <div class="card" id="price-summary-card" style="text-align:center; display:none;">
+                    <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0.4rem;">סה"כ לתשלום</p>
+                    <div class="price-summary" style="margin-top:0; display:inline-block;">
+                        <span class="price-amount" id="price-display">₪—</span>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>אמצעי תשלום</h2>
                     <p class="subtitle">איך תרצו לשלם?</p>
@@ -1109,9 +1111,12 @@
 
                 <div class="card" style="text-align: center;">
                     <h2>הכל מוכן!</h2>
-                    <p class="subtitle" style="margin-bottom: 1.5rem;">
+                    <p class="subtitle" style="margin-bottom: 0.75rem;">
                         לחצו על הכפתור לשליחת ההזמנה.<br>
                         נחזור אליכם בהקדם לאישור.
+                    </p>
+                    <p style="font-size:0.85rem; color:var(--gold); margin-bottom:1.2rem; opacity:0.9;">
+                        ההזמנה תצא לביצוע לאחר אישור התשלום
                     </p>
                     <button type="submit" class="btn btn-submit" id="submitBtn">
                         <span style="font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;">🍣</span> שליחת ההזמנה
@@ -1217,6 +1222,7 @@
         function goToSection(n) {
             document.querySelector(`.form-section[data-section="${currentSection}"]`).classList.remove('active');
             document.querySelector(`.form-section[data-section="${n}"]`).classList.add('active');
+            if (n === 4) updatePrice();
 
             document.querySelectorAll('.progress-step').forEach((step, i) => {
                 const stepNum = i + 1;
@@ -1280,7 +1286,7 @@
             const activeDays = days.filter(d => d.active);
             const content = document.getElementById('schedule-content');
             if (activeDays.length === 0) {
-                content.innerHTML = '<p class="subtitle">אין ימי משלוח פעילים השבוע. לבירורים: הלל - 0555573725</p>';
+                content.innerHTML = '<p class="subtitle">אין ימות משלוח פעילים השבוע. לבירורים: הלל - 0555573725</p>';
                 return;
             }
             const subtitle = weekLabel
@@ -1334,30 +1340,45 @@
             optionsEl.querySelectorAll('input[name="deliveryTime"]').forEach(el => {
                 el.addEventListener('change', updateProgressErrors);
             });
+            const note = document.createElement('p');
+            note.style.cssText = 'margin-top:0.75rem; font-size:0.85rem; color:var(--text-muted); text-align:center;';
+            note.textContent = 'המשלוח יגיע בטווח של עד שעה מהשעה שנבחרה';
+            optionsEl.appendChild(note);
             wrapper.style.display = 'block';
+        }
+
+        function isDeadlinePassed(deadlineStr) {
+            if (!deadlineStr) return false;
+            const [h, m] = deadlineStr.split(':').map(Number);
+            const cutoff = new Date();
+            cutoff.setHours(h, m, 0, 0);
+            cutoff.setTime(cutoff.getTime() + 60 * 60 * 1000); // +1 hour grace
+            return new Date() > cutoff;
         }
 
         function renderDayOptions(days) {
             const activeDays = days.filter(d => d.active);
             const container = document.getElementById('day-options-container');
             if (activeDays.length === 0) {
-                container.innerHTML = '<p style="padding: 1rem; color: var(--text-muted);">אין ימי משלוח זמינים השבוע.</p>';
+                container.innerHTML = '<p style="padding: 1rem; color: var(--text-muted);">אין ימות משלוח זמינים השבוע.</p>';
                 return;
             }
             container.innerHTML = activeDays.map(d => {
                 const id = 'day-' + d.day.replace(/\s/g, '-');
+                const locked = isDeadlinePassed(d.deadline);
                 const desc = [
                     d.deadline ? `הזמנה עד ${d.deadline}` : '',
                     (d.deliveryStart && d.deliveryEnd) ? `משלוח ${d.deliveryStart}-${d.deliveryEnd}` : ''
                 ].filter(Boolean).join(' · ');
                 return `
-                <div class="option-item">
+                <div class="option-item" style="${locked ? 'opacity:0.45; pointer-events:none;' : ''}">
                     <input type="radio" name="day" id="${id}" value="${d.label || d.day}"
-                        data-start="${d.deliveryStart || ''}" data-end="${d.deliveryEnd || ''}" required>
+                        data-start="${d.deliveryStart || ''}" data-end="${d.deliveryEnd || ''}"
+                        ${locked ? 'disabled' : ''} required>
                     <label for="${id}">
                         <div class="custom-check"></div>
                         <div class="option-text">
-                            <div class="name">${d.label || d.day}</div>
+                            <div class="name">${d.label || d.day}${locked ? ' <span style="font-size:0.75rem; color:#e06060;">— סגור להזמנות</span>' : ''}</div>
                             ${desc ? `<div class="desc">${desc}</div>` : ''}
                         </div>
                     </label>
@@ -1368,7 +1389,7 @@
 
         function renderFallbackDays() {
             const content = document.getElementById('schedule-content');
-            content.innerHTML = '<p class="subtitle">לבדיקת ימי משלוח זמינים, צרו קשר: הלל - 0555573725</p>';
+            content.innerHTML = '<p class="subtitle">לבדיקת ימות משלוח זמינים, צרו קשר: הלל - 0555573725</p>';
             const container = document.getElementById('day-options-container');
             container.innerHTML = `
                 <div class="option-item">
@@ -1457,7 +1478,10 @@
                     <div id="pay-fallback" style="display:none; margin-top:0.75rem; font-size:0.85rem; color:var(--text-muted);">
                         האפליקציה לא נמצאה — העתיקו את המספר:
                         <strong style="color:var(--gold);">${PAYMENT_PHONE_DISPLAY}</strong>
-                    </div>`;
+                    </div>
+                    <p style="margin-top:0.9rem; font-size:0.85rem; color:var(--gold); opacity:0.9;">
+                        בהערת התשלום כתבו את שמכם המלא
+                    </p>`;
                 document.getElementById('pay-btn').addEventListener('click', () => {
                     setTimeout(() => { if (!document.hidden) document.getElementById('pay-fallback').style.display = 'block'; }, 1500);
                 });
@@ -1476,7 +1500,10 @@
                             📋 העתק מספר
                         </button>
                     </div>
-                    ${priceLabel ? `<div style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">סכום לתשלום:${priceLabel}</div>` : ''}`;
+                    ${priceLabel ? `<div style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">סכום לתשלום:${priceLabel}</div>` : ''}
+                    <p style="margin-top:0.9rem; font-size:0.85rem; color:var(--gold); opacity:0.9;">
+                        בהערת התשלום כתבו את שמכם המלא
+                    </p>`;
             }
         }
 
@@ -1502,16 +1529,23 @@
         });
 
         // ---- Live price calculator ----------------------------------------
-        const PRICES = { '40': { veg: 130, fish: 145 }, '80': { veg: 230, fish: 245 } };
+        const PRICES = { '40': { veg: 130, fish: 145 }, '80': { veg: 230, fish: 260 } };
         function updatePrice() {
             const platter = document.querySelector('input[name="platter"]:checked');
             const fishChecks = document.querySelectorAll('input[name="fish"]:checked');
-            if (!platter) return;
+            const el = document.getElementById('price-display');
+            const card = document.getElementById('price-summary-card');
+            if (!platter || !el) return;
             const p = PRICES[platter.value];
-            const isVegOnly = fishChecks.length === 1 &&
-                              fishChecks[0].value === 'vegetarian';
+            const isVegOnly = fishChecks.length === 1 && fishChecks[0].value === 'vegetarian';
             const price = (fishChecks.length === 0 || isVegOnly) ? p.veg : p.fish;
-            document.getElementById('price-display').textContent = '₪' + price;
+            el.textContent = '₪' + price;
+            if (card) card.style.display = 'block';
+            // re-render payment note in case price changed
+            const selectedPayment = document.querySelector('input[name="payment"]:checked');
+            if (selectedPayment && (selectedPayment.value === 'Bit' || selectedPayment.value === 'Paybox')) {
+                renderPaymentNote(selectedPayment.value);
+            }
         }
         document.querySelectorAll('input[name="platter"]').forEach(el =>
             el.addEventListener('change', updatePrice));
