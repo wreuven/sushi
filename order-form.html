@@ -1347,13 +1347,26 @@
             wrapper.style.display = 'block';
         }
 
-        function isDeadlinePassed(deadlineStr) {
-            if (!deadlineStr) return false;
+        function isDeadlinePassed(dayName, deadlineStr) {
+            if (!deadlineStr || !dayName) return false;
+            const dayMap = { 'ראשון':0, 'שני':1, 'שלישי':2, 'רביעי':3, 'חמישי':4, 'שישי':5, 'שבת':6 };
+            let targetDay = null;
+            for (const [name, num] of Object.entries(dayMap)) {
+                if (dayName.includes(name)) { targetDay = num; break; }
+            }
+            if (targetDay === null) return false;
+            const now = new Date();
+            const today = now.getDay();
+            // Day already passed this week
+            if (targetDay < today) return true;
+            // Future day — still open
+            if (targetDay > today) return false;
+            // Same day — check deadline + 1 hour
             const [h, m] = deadlineStr.split(':').map(Number);
             const cutoff = new Date();
             cutoff.setHours(h, m, 0, 0);
-            cutoff.setTime(cutoff.getTime() + 60 * 60 * 1000); // +1 hour grace
-            return new Date() > cutoff;
+            cutoff.setTime(cutoff.getTime() + 60 * 60 * 1000);
+            return now > cutoff;
         }
 
         function renderDayOptions(days) {
@@ -1365,7 +1378,7 @@
             }
             container.innerHTML = activeDays.map(d => {
                 const id = 'day-' + d.day.replace(/\s/g, '-');
-                const locked = isDeadlinePassed(d.deadline);
+                const locked = isDeadlinePassed(d.day, d.deadline);
                 const desc = [
                     d.deadline ? `הזמנה עד ${d.deadline}` : '',
                     (d.deliveryStart && d.deliveryEnd) ? `משלוח ${d.deliveryStart}-${d.deliveryEnd}` : ''
