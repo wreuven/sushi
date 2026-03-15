@@ -871,9 +871,9 @@
                     <div class="form-group">
                         <label class="field-label">
                             <span class="required">*</span>
-                            מספר טלפון
+                            טלפון סלולרי
                         </label>
-                        <input type="tel" id="field-phone" placeholder="מספר טלפון" required>
+                        <input type="tel" id="field-phone" placeholder="טלפון סלולרי" required>
                     </div>
 
                     <div class="form-group">
@@ -1207,7 +1207,7 @@
                 const name  = document.getElementById('field-name').value.trim();
                 const phone = document.getElementById('field-phone').value.trim();
                 if (!name)  { showToast('נא למלא שם פרטי ושם משפחה'); return; }
-                if (!phone) { showToast('נא למלא מספר טלפון'); return; }
+                if (!phone) { showToast('נא למלא טלפון סלולרי'); return; }
             }
             if (currentSection === 3 && !validateSection(3)) {
                 const day    = document.querySelector('input[name="day"]:checked');
@@ -1585,7 +1585,7 @@
 
             // Basic validation
             if (!name)  { showToast('נא למלא שם פרטי ושם משפחה'); goToSection(2); return; }
-            if (!phone) { showToast('נא למלא מספר טלפון');         goToSection(2); return; }
+            if (!phone) { showToast('נא למלא טלפון סלולרי');         goToSection(2); return; }
             if (!day)          { showToast('נא לבחור יום משלוח');          goToSection(3); return; }
             if (!deliveryTime) { showToast('נא לבחור שעת משלוח');          goToSection(3); return; }
             if (!platter)      { showToast('נא לבחור גודל מגש');            goToSection(3); return; }

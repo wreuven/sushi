@@ -81,6 +81,7 @@ function saveOrder(data) {
     'בקשות: '       + (data.notes    || 'ללא') + '\n' +
     'תשלום: '       + (data.payment  || '-')   + '\n\n' +
     'תאריך: ' + timestamp + '\n\n' +
+    '💬 אישור הזמנה בוואטסאפ: https://wa.me/972' + (data.phone || '').replace(/^0/, '').replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent('היי ' + data.name + ', ההזמנה שלך התקבלה! 🍣') + '\n\n' +
     '🔗 ניהול הזמנות: https://wreuven.github.io/sushi/admin.html';
 
   MailApp.sendEmail(EMAIL_TO, subject, body);
