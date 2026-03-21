@@ -736,7 +736,9 @@
             const sD = weekStart.getDate(), sM = months[weekStart.getMonth()];
             const eD = weekEnd.getDate(), eM = months[weekEnd.getMonth()];
             const range = sM === eM ? `${sD}-${eD} ${sM}` : `${sD} ${sM} - ${eD} ${eM}`;
-            const value = `${sD}.${weekStart.getMonth()+1}.${String(weekStart.getFullYear()).slice(2)}`;
+            const mNum = weekStart.getMonth()+1;
+            const yr = String(weekStart.getFullYear()).slice(2);
+            const value = `${sD}-${eD}.${mNum}.${yr}`;
 
             const opt = document.createElement('option');
             opt.value = value;
