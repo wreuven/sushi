@@ -1357,11 +1357,9 @@
             if (targetDay === null) return false;
             const now = new Date();
             const today = now.getDay();
-            // Day already passed this week
-            if (targetDay < today) return true;
-            // Future day — still open
-            if (targetDay > today) return false;
-            // Same day — check deadline + 1 hour
+            // Only auto-lock if it's today and deadline + 1h passed.
+            // Other days are managed by the admin's active list.
+            if (targetDay !== today) return false;
             const [h, m] = deadlineStr.split(':').map(Number);
             const cutoff = new Date();
             cutoff.setHours(h, m, 0, 0);
