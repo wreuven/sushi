@@ -1274,8 +1274,15 @@
                 });
                 const data = await res.json();
                 if (data.status === 'ok') {
-                    renderScheduleCard(data.weekLabel, data.days);
-                    renderDayOptions(data.days);
+                    // Multi-week support: pick the first week with active days
+                    let weekLabel = data.weekLabel || '';
+                    let days = data.days || [];
+                    if (data.weeks && data.weeks.length) {
+                        const best = data.weeks.find(w => w.days && w.days.some(d => d.active));
+                        if (best) { weekLabel = best.weekLabel; days = best.days; }
+                    }
+                    renderScheduleCard(weekLabel, days);
+                    renderDayOptions(days);
                 } else {
                     renderFallbackDays();
                 }

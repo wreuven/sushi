@@ -747,20 +747,29 @@
     buildWeekOptions();
 
     // ---- Availability ----
+    let weeksCache = {}; // weekLabel → days array
+
     async function loadAvailability() {
         const res = await api({ action: 'getAvailability' });
         document.getElementById('save-bar').style.display = 'none';
 
-        if (res.status === 'ok') {
-            const sel = document.getElementById('week-label');
-            const saved = res.weekLabel || '';
-            // Try to match saved value to an option; fall back to first
-            const match = Array.from(sel.options).find(o => o.value === saved);
-            sel.value = match ? saved : sel.options[0]?.value || '';
-            renderDaysEditor(res.days);
-        } else {
-            renderDaysEditor([]);
+        // Cache all weeks from the API
+        weeksCache = {};
+        if (res.status === 'ok' && res.weeks) {
+            res.weeks.forEach(w => { weeksCache[w.weekLabel] = w.days; });
+        } else if (res.status === 'ok' && res.weekLabel) {
+            // Backward compat: old flat format
+            weeksCache[res.weekLabel] = res.days;
         }
+
+        const sel = document.getElementById('week-label');
+        // Select the first option that has saved data, or default to first
+        const matchOption = Array.from(sel.options).find(o => weeksCache[o.value]);
+        sel.value = matchOption ? matchOption.value : sel.options[0]?.value || '';
+        renderDaysEditor(weeksCache[sel.value] || []);
+
+        // Switch data when dropdown changes
+        sel.onchange = () => renderDaysEditor(weeksCache[sel.value] || []);
 
         // Show save bar when on availability tab
         document.getElementById('save-bar').style.display =
@@ -836,6 +845,7 @@
         btn.textContent = 'שמירה ועדכון הטופס';
 
         if (res.status === 'ok') {
+            weeksCache[weekLabel] = availability;
             statusEl.textContent = '✓ נשמר בהצלחה — הטופס יתעדכן אוטומטית';
             statusEl.className = 'save-status success';
         } else {

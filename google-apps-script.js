@@ -128,15 +128,27 @@ function setAvailability(days, weekLabel) {
     'יום', 'שם תצוגה', 'דדליין', 'משלוח מ', 'משלוח עד', 'פעיל'
   ]);
 
-  // Clear existing data rows
+  // Remove only rows belonging to this weekLabel
   if (sheet.getLastRow() > 1) {
-    sheet.deleteRows(2, sheet.getLastRow() - 1);
+    var allRows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
+    var rowsToDelete = [];
+    var currentWeek = '';
+    for (var i = 0; i < allRows.length; i++) {
+      if (allRows[i][0] === '__weekLabel__') {
+        currentWeek = allRows[i][1];
+      }
+      if (currentWeek === weekLabel) {
+        rowsToDelete.push(i + 2); // +2 for header row + 0-index
+      }
+    }
+    // Delete from bottom up to keep row numbers valid
+    for (var j = rowsToDelete.length - 1; j >= 0; j--) {
+      sheet.deleteRow(rowsToDelete[j]);
+    }
   }
 
-  // Write week label in A1 description cell if desired
-  // (we store weekLabel as first row data with special day value)
+  // Append new rows for this week
   sheet.appendRow(['__weekLabel__', weekLabel || '', '', '', '', true]);
-
   days.forEach(function(d) {
     sheet.appendRow([d.day, d.label, d.deadline, d.deliveryStart, d.deliveryEnd, d.active]);
   });
@@ -147,18 +159,19 @@ function setAvailability(days, weekLabel) {
 function getAvailability() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_AVAIL);
   if (!sheet || sheet.getLastRow() < 2) {
-    return { status: 'ok', weekLabel: '', days: [] };
+    return { status: 'ok', weeks: [], weekLabel: '', days: [] };
   }
 
   var rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
-  var weekLabel = '';
-  var days = [];
+  var weeks = [];
+  var currentWeek = null;
 
   rows.forEach(function(r) {
     if (r[0] === '__weekLabel__') {
-      weekLabel = r[1];
-    } else {
-      days.push({
+      currentWeek = { weekLabel: r[1], days: [] };
+      weeks.push(currentWeek);
+    } else if (currentWeek) {
+      currentWeek.days.push({
         day:           r[0],
         label:         r[1],
         deadline:      formatTime(r[2]),
@@ -169,7 +182,9 @@ function getAvailability() {
     }
   });
 
-  return { status: 'ok', weekLabel: weekLabel, days: days };
+  // Backward compat: also return first week's data flat
+  var first = weeks[0] || { weekLabel: '', days: [] };
+  return { status: 'ok', weeks: weeks, weekLabel: first.weekLabel, days: first.days };
 }
 
 // ---- Helpers ----------------------------------------------
