@@ -1318,10 +1318,10 @@
             const optionsEl = document.getElementById('delivery-time-options');
             if (!start || !end) { wrapper.style.display = 'none'; return; }
 
-            const startH = parseInt(start.split(':')[0]);
-            const endH   = parseInt(end.split(':')[0]);
-            const midH   = Math.round((startH + endH) / 2);
-            const slots  = [startH, midH, endH].map(h => String(h).padStart(2, '0') + ':00');
+            const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+(m||0); };
+            const fmtMin = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+            const startM = toMin(start), endM = toMin(end), midM = Math.round((startM+endM)/2);
+            const slots = [startM, midM, endM].map(fmtMin);
 
             const flexOption = `
                 <div class="option-item">
