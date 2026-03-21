@@ -530,8 +530,22 @@
             <h2>הגדרת ימי הזמנה לשבוע הקרוב</h2>
 
             <div class="avail-section">
-                <label>תווית השבוע (מה שיוצג ללקוחות)</label>
-                <input type="text" id="week-label" placeholder="למשל: 14.3.26">
+                <label>שבוע הזמנות</label>
+                <select id="week-label" style="
+                    padding: 0.75rem 1rem;
+                    background: var(--bg-input);
+                    border: 2px solid rgba(228,194,110,0.15);
+                    border-radius: 10px;
+                    color: var(--text-light);
+                    font-family: 'Heebo', Arial, sans-serif;
+                    font-size: 1rem;
+                    outline: none;
+                    width: 100%;
+                    max-width: 320px;
+                    text-align: right;
+                    cursor: pointer;
+                ">
+                </select>
             </div>
 
             <div class="avail-section">
@@ -702,13 +716,47 @@
         }
     }
 
+    // ---- Week selector ----
+    function buildWeekOptions() {
+        const months = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+        const labels = ['השבוע', 'שבוע הבא', 'בעוד שבועיים', 'בעוד 3 שבועות'];
+        const select = document.getElementById('week-label');
+        const now = new Date();
+        // Find this week's Sunday (Israeli week start)
+        const sunday = new Date(now);
+        sunday.setDate(sunday.getDate() - sunday.getDay());
+        sunday.setHours(0,0,0,0);
+
+        for (let i = 0; i < 4; i++) {
+            const weekStart = new Date(sunday);
+            weekStart.setDate(weekStart.getDate() + i * 7);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            const sD = weekStart.getDate(), sM = months[weekStart.getMonth()];
+            const eD = weekEnd.getDate(), eM = months[weekEnd.getMonth()];
+            const range = sM === eM ? `${sD}-${eD} ${sM}` : `${sD} ${sM} - ${eD} ${eM}`;
+            const value = `${sD}.${weekStart.getMonth()+1}.${String(weekStart.getFullYear()).slice(2)}`;
+
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = `${labels[i]} (${range})`;
+            select.appendChild(opt);
+        }
+    }
+    buildWeekOptions();
+
     // ---- Availability ----
     async function loadAvailability() {
         const res = await api({ action: 'getAvailability' });
         document.getElementById('save-bar').style.display = 'none';
 
         if (res.status === 'ok') {
-            document.getElementById('week-label').value = res.weekLabel || '';
+            const sel = document.getElementById('week-label');
+            const saved = res.weekLabel || '';
+            // Try to match saved value to an option; fall back to first
+            const match = Array.from(sel.options).find(o => o.value === saved);
+            sel.value = match ? saved : sel.options[0]?.value || '';
             renderDaysEditor(res.days);
         } else {
             renderDaysEditor([]);
