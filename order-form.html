@@ -1274,12 +1274,22 @@
                 });
                 const data = await res.json();
                 if (data.status === 'ok') {
-                    // Multi-week support: pick the first week with active days
+                    // Multi-week support: pick the first non-expired week with active days
                     let weekLabel = data.weekLabel || '';
                     let days = data.days || [];
                     if (data.weeks && data.weeks.length) {
-                        const best = data.weeks.find(w => w.days && w.days.some(d => d.active));
+                        const now = new Date();
+                        function isWeekExpired(label) {
+                            // label format: "22-28.3.26" → end day 28, month 3, year 26
+                            const m = label.match(/\d+-(\d+)\.(\d+)\.(\d+)/);
+                            if (!m) return false;
+                            const endDay = parseInt(m[1]), month = parseInt(m[2]) - 1, year = 2000 + parseInt(m[3]);
+                            const endDate = new Date(year, month, endDay, 23, 59, 59);
+                            return now > endDate;
+                        }
+                        const best = data.weeks.find(w => w.days && w.days.some(d => d.active) && !isWeekExpired(w.weekLabel));
                         if (best) { weekLabel = best.weekLabel; days = best.days; }
+                        else { weekLabel = ''; days = []; }
                     }
                     renderScheduleCard(weekLabel, days);
                     renderDayOptions(days);
